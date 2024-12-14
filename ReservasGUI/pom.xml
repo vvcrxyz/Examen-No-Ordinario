@@ -12,4 +12,16 @@
         <exec.mainClass>com.mycompany.examennoordinario.ExamenNoOrdinario</exec.mainClass>
     </properties>
     <name>ReservasGUI</name>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>Persistencia</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ObjetosNegocio</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

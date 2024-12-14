@@ -31,7 +31,7 @@ public class RestauranteDAO {
     }
 
 
-    public void guardarRestaurente(RestauranteEntidad restaurante) {
+    public void guardarRestaurante(RestauranteEntidad restaurante) {
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
@@ -60,7 +60,7 @@ public class RestauranteDAO {
     }
 
 
-    public void eliminarRestaurente(RestauranteEntidad restaurante) {
+    public void eliminarRestaurante(RestauranteEntidad restaurante) {
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
@@ -89,7 +89,7 @@ public class RestauranteDAO {
     }
 
 
-    public void modificarRestaurente(RestauranteEntidad restaurante) {
+    public void modificarRestaurante(RestauranteEntidad restaurante) {
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
@@ -118,7 +118,7 @@ public class RestauranteDAO {
     }
 
 
-    public RestauranteEntidad buscarUnRestaurente(Long id) {
+    public RestauranteEntidad buscarUnRestaurante(Long id) {
 
         try {
             // Construimos el EntityManager
@@ -144,7 +144,7 @@ public class RestauranteDAO {
     }
 
 
-    public List<ClienteEntidad> buscarTodosRestaurentes() {
+    public List<RestauranteEntidad> buscarTodosRestaurantes() {
 
         try {
             // Construimos el EntityManager
@@ -152,7 +152,7 @@ public class RestauranteDAO {
             entityManager = managerFactory.createEntityManager();
 
             // Buscamos las entidades en la base de datos
-            TypedQuery<ClienteEntidad> query = entityManager.createQuery("SELECT a FROM EstudianteEntidad a", ClienteEntidad.class);
+            TypedQuery<RestauranteEntidad> query = entityManager.createQuery("SELECT a FROM RestauranteEntidad a", RestauranteEntidad.class);
 
             // Regresamos la entidad
             return query.getResultList();

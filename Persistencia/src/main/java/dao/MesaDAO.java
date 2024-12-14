@@ -30,7 +30,7 @@ public class MesaDAO {
     }
 
 
-    public void guardarCliente(MesaEntidad mesa) {
+    public void guardarMesa(MesaEntidad mesa) {
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
@@ -59,7 +59,7 @@ public class MesaDAO {
     }
 
 
-    public void eliminarCliente(MesaEntidad mesa) {
+    public void eliminarMesa(MesaEntidad mesa) {
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");

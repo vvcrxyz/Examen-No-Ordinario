@@ -4,6 +4,7 @@
  */
 package dto;
 
+import entidades.ReservaEntidad;
 import java.sql.Time;
 import java.util.Date;
 
@@ -20,11 +21,24 @@ public class ReservaDTO {
     Time horaReserva;
     String ubicacion;
     int numPersonas;
+    private double costoReserva;
 
     public ReservaDTO() {
     }
 
-    public ReservaDTO(Long id, String nombreCompleto, String telefono, Date fechaReserva, Time horaReserva, String ubicacion, int numPersonas) {
+    public ReservaDTO(String nombreCompleto, String telefono, Date fechaReserva, Time horaReserva, String ubicacion, int numPersonas, double costoReserva) {
+        this.nombreCompleto = nombreCompleto;
+        this.telefono = telefono;
+        this.fechaReserva = fechaReserva;
+        this.horaReserva = horaReserva;
+        this.ubicacion = ubicacion;
+        this.numPersonas = numPersonas;
+        this.costoReserva = costoReserva;
+    }
+    
+    
+
+    public ReservaDTO(Long id, String nombreCompleto, String telefono, Date fechaReserva, Time horaReserva, String ubicacion, int numPersonas, double costoReserva) {
         this.id = id;
         this.nombreCompleto = nombreCompleto;
         this.telefono = telefono;
@@ -32,6 +46,18 @@ public class ReservaDTO {
         this.horaReserva = horaReserva;
         this.ubicacion = ubicacion;
         this.numPersonas = numPersonas;
+        this.costoReserva = costoReserva;
+    }
+    
+    public ReservaDTO(ReservaEntidad r) {
+        this.id = r.getId();
+        this.nombreCompleto = r.getNombreCompleto();
+        this.telefono = r.getTelefono();
+        this.fechaReserva = r.getFechaReserva();
+        this.horaReserva = r.getHoraReserva();
+        this.ubicacion = r.getUbicacion();
+        this.numPersonas = r.getNumPersonas();
+        this.costoReserva = r.getCostoReserva();        
     }
 
     public Long getId() {
@@ -90,9 +116,20 @@ public class ReservaDTO {
         this.numPersonas = numPersonas;
     }
 
+    public double getCostoReserva() {
+        return costoReserva;
+    }
+
+    public void setCostoReserva(double costoReserva) {
+        this.costoReserva = costoReserva;
+    }
+
     @Override
     public String toString() {
-        return "ReservaDTO{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + ", fechaReserva=" + fechaReserva + ", horaReserva=" + horaReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + '}';
+        return "ReservaDTO{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + ", fechaReserva=" + fechaReserva + ", horaReserva=" + horaReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + ", costoReserva=" + costoReserva + '}';
     }
+
+
+    
     
 }

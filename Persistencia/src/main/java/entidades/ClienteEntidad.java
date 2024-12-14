@@ -28,7 +28,7 @@ public class ClienteEntidad implements Serializable {
     @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "telefono", length = 10, nullable = false)
+    @Column(name = "telefono",  nullable = false)
     private String telefono;
 
     // Constructor por defecto
