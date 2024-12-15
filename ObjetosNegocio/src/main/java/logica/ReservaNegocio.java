@@ -3,6 +3,10 @@ package logica;
 import dao.ReservaDAO;
 import dto.ReservaDTO;
 import entidades.ReservaEntidad;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,4 +91,36 @@ public class ReservaNegocio {
         }
         return reservas;
     }
+    
+    public boolean verificarDisponibilidadMesa(LocalDateTime fechaHoraReserva, String ubicacion) {
+        if (fechaHoraReserva == null || ubicacion == null || ubicacion.isEmpty()) {
+            throw new IllegalArgumentException("Fecha, hora y ubicación no pueden ser nulos o vacíos.");
+        }
+
+        // Obtiene todas las reservas desde el DAO
+        List<ReservaDTO> reservas = buscarTodasReservas();
+
+        for (ReservaDTO reserva : reservas) {
+            // Conversión de la fecha y hora de la reserva a LocalDateTime
+            LocalDateTime fechaHoraReservaExistente = convertirAFechaHora(reserva);
+
+            // Verifica si hay una coincidencia exacta en la fecha, hora y ubicación
+            if (fechaHoraReservaExistente.equals(fechaHoraReserva) && reserva.getUbicacion().equalsIgnoreCase(ubicacion)) {
+                return false; // La mesa ya está reservada en ese momento y lugar
+            }
+        }
+        return true; // La mesa está disponible
+    }
+
+    /**
+     * Convierte el DTO de reserva en un objeto LocalDateTime a partir de la fecha y la hora de la reserva.
+     */
+    private LocalDateTime convertirAFechaHora(ReservaDTO reserva) {
+        LocalDate localDateReserva = reserva.getFechaReserva().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+        LocalTime localTimeReserva = reserva.getHoraReserva().toLocalTime();
+        return LocalDateTime.of(localDateReserva, localTimeReserva);
+    }
+
 }

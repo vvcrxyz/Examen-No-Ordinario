@@ -67,4 +67,20 @@ public class ClienteNegocio {
         }
         return clientes;
     }
+    
+    public List<ClienteDTO> buscarClientes() {
+        List<ClienteDTO> carreras = new ArrayList<>();
+        List<ClienteEntidad> bE = new ArrayList<>();
+        bE = clienteDAO.buscarTodosClientes();
+        
+        if (carreras != null) {
+            for (ClienteEntidad y : bE) {
+                ClienteDTO x = new ClienteDTO(y);
+                carreras.add(x);
+            }
+            return carreras;
+        } else { 
+            return null;
+        }
+    }
 }

@@ -30,6 +30,7 @@ public class FrmInicio extends javax.swing.JFrame {
         btnMesa = new javax.swing.JLabel();
         btnConsultas = new javax.swing.JLabel();
         btnSalir = new javax.swing.JLabel();
+        btnInsercion = new javax.swing.JLabel();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -72,6 +73,15 @@ public class FrmInicio extends javax.swing.JFrame {
         });
         getContentPane().add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(910, 30, -1, -1));
 
+        btnInsercion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnIncersion.png"))); // NOI18N
+        btnInsercion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnInsercion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnInsercionMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnInsercion, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 660, -1, -1));
+
         fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FrmMenu.png"))); // NOI18N
         getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
@@ -104,6 +114,13 @@ public class FrmInicio extends javax.swing.JFrame {
         // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_btnSalirMouseClicked
+
+    private void btnInsercionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInsercionMouseClicked
+        // TODO add your handling code here:
+        FrmInsercionMasiva frm = new FrmInsercionMasiva();
+        frm.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnInsercionMouseClicked
 
     /**
      * @param args the command line arguments
@@ -142,6 +159,7 @@ public class FrmInicio extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnConsultas;
+    private javax.swing.JLabel btnInsercion;
     private javax.swing.JLabel btnMesa;
     private javax.swing.JLabel btnReserva;
     private javax.swing.JLabel btnSalir;

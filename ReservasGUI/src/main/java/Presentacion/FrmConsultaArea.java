@@ -40,6 +40,8 @@ public class FrmConsultaArea extends javax.swing.JFrame {
         btnGenerarReporte = new javax.swing.JLabel();
         comboBoxTipoMesa = new javax.swing.JComboBox<>();
         comboBoxUbicacion = new javax.swing.JComboBox<>();
+        fldFechaInicio = new javax.swing.JPanel();
+        fldFechaFin = new javax.swing.JPanel();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -93,6 +95,8 @@ public class FrmConsultaArea extends javax.swing.JFrame {
 
         comboBoxUbicacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Terraza", "General", "Ventana" }));
         getContentPane().add(comboBoxUbicacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 410, 110, 50));
+        getContentPane().add(fldFechaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 260, 350, 40));
+        getContentPane().add(fldFechaFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 260, 350, 40));
 
         fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FrmMesas.jpg"))); // NOI18N
         getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -155,6 +159,8 @@ public class FrmConsultaArea extends javax.swing.JFrame {
     private javax.swing.JLabel btnRegresar;
     private javax.swing.JComboBox<String> comboBoxTipoMesa;
     private javax.swing.JComboBox<String> comboBoxUbicacion;
+    private javax.swing.JPanel fldFechaFin;
+    private javax.swing.JPanel fldFechaInicio;
     private javax.swing.JLabel fondo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

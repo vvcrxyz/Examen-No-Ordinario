@@ -4,19 +4,114 @@
  */
 package Presentacion;
 
+import dto.MesaDTO;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import logica.MesaNegocio;
+import utilerias.JButtonCellEditor;
+import utilerias.JButtonRenderer;
+
 /**
  *
  * @author limon
  */
 public class FrmGestionarMesa extends javax.swing.JFrame {
 
+    MesaNegocio mesaNegocio = new MesaNegocio();
+
+
     /**
      * Creates new form FrmGestionarMesa
      */
     public FrmGestionarMesa() {
         initComponents();
+        
+        botonEditarEnTabla();
+        botonEliminarEnTabla();
     }
+    
+    private void botonEliminarEnTabla() {
 
+        ActionListener onEliminarClickListener = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtén la fila seleccionada
+                int filaSeleccionada = tblMesa.getSelectedRow();
+
+                if (filaSeleccionada != -1) { 
+                    
+                    DefaultTableModel modeloTabla = (DefaultTableModel) tblMesa.getModel();
+
+                    String codigoMesa = (String) modeloTabla.getValueAt(filaSeleccionada, 0); 
+
+                    MesaDTO mesa = new MesaDTO();
+                    
+                    mesa.setCodigoMesa(codigoMesa);
+                    
+                    int respuesta = JOptionPane.showConfirmDialog(
+                            null,
+                            "¿Está seguro de que desea eliminar este alumno?",
+                            "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE
+                    );
+
+                    if (respuesta == JOptionPane.YES_OPTION) {
+                        try {
+                            mesaNegocio.eliminarMesa(mesa);
+                            JOptionPane.showMessageDialog(null, "La mesa se ha eliminado correctamente", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+                            dispose();
+                            FrmGestionarMesa frm = new FrmGestionarMesa();
+                            frm.setVisible(true);
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado al eliminar la mesa: " + ex, "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
+                }
+            }
+        };
+
+        TableColumnModel modeloColumnas = this.tblMesa.getColumnModel();
+        modeloColumnas.getColumn(2).setCellRenderer(new JButtonRenderer("Eliminar"));
+        modeloColumnas.getColumn(2).setCellEditor(new JButtonCellEditor("Eliminar", onEliminarClickListener));
+    }
+    
+    private void botonEditarEnTabla() {
+
+        ActionListener onEliminarClickListener = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtén la fila seleccionada
+                int filaSeleccionada = tblMesa.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verifica que haya una fila seleccionada
+                    // Usa el modelo para obtener los datos del estudiante en esa fila
+                    DefaultTableModel modeloTabla = (DefaultTableModel) tblMesa.getModel();
+
+                    String codigoMesa = (String) modeloTabla.getValueAt(filaSeleccionada, 0);  
+                    
+                    MesaDTO mesa = new MesaDTO();
+                    
+                    mesa.setCodigoMesa(codigoMesa);
+
+                    // Aquí puedes implementar la lógica de eliminación o cualquier otra acción
+                    System.out.println("Mesa a eliminar: " + mesa.toString());
+                    FrmEditarMesa frmEAPU = new FrmEditarMesa(mesa);
+                    frmEAPU.setVisible(true);
+
+                }
+            }
+        };
+        TableColumnModel modeloColumnas = this.tblMesa.getColumnModel();
+        modeloColumnas.getColumn(1).setCellRenderer(new JButtonRenderer("Editar"));
+        modeloColumnas.getColumn(1).setCellEditor(new JButtonCellEditor("Editar", onEliminarClickListener));
+        }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

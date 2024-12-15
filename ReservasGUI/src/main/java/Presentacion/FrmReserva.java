@@ -4,18 +4,41 @@
  */
 package Presentacion;
 
+import com.github.lgooddatepicker.components.DateTimePicker;
+import dto.ClienteDTO;
+import java.awt.FlowLayout;
+import java.util.List;
+import logica.ClienteNegocio;
+
 /**
  *
  * @author limon
  */
 public class FrmReserva extends javax.swing.JFrame {
 
+    ClienteNegocio clienteNegocio = new ClienteNegocio();
+    DateTimePicker dateTimePicker = new DateTimePicker();
+    
     /**
      * Creates new form FrmReserva
      */
     public FrmReserva() {
         initComponents();
+        
+        fldFechaHora.setLayout(new FlowLayout());
+        fldFechaHora.add(dateTimePicker);
+        
+        llenarComboBoxClientes(clienteNegocio.buscarTodosClientes());
     }
+    
+    private void llenarComboBoxClientes(List<ClienteDTO> cliente) {
+        int i = 0;
+        while (cliente.size() > i) {
+            comboBoxNombreCliente.addItem(cliente.get(i).getNombreCompleto());
+            i++;
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -36,10 +59,10 @@ public class FrmReserva extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         campoTextoTelefono = new javax.swing.JTextField();
         campoTextoNoPersonas = new javax.swing.JTextField();
-        campoTextoNombreCompleto = new javax.swing.JTextField();
         comboBoxUbicacion = new javax.swing.JComboBox<>();
-        campoFechaHora = new javax.swing.JTextField();
         btnHacerReserva = new javax.swing.JLabel();
+        fldFechaHora = new javax.swing.JPanel();
+        comboBoxNombreCliente = new javax.swing.JComboBox<>();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -64,35 +87,39 @@ public class FrmReserva extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel4.setText("Nombre completo");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 210, -1, -1));
+        jLabel4.setText("Nombre ");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 210, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Telefono");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 270, -1, -1));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 270, -1, -1));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setText("Fecha y hora");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 330, -1, -1));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setText("Ubicacion");
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 400, -1, -1));
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 400, -1, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setText("No. personas");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 460, -1, -1));
-        getContentPane().add(campoTextoTelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 270, 230, 40));
-        getContentPane().add(campoTextoNoPersonas, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 460, 100, 40));
-        getContentPane().add(campoTextoNombreCompleto, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 210, 230, 40));
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 460, -1, -1));
+
+        campoTextoTelefono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                none(evt);
+            }
+        });
+        getContentPane().add(campoTextoTelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 270, 230, 40));
+        getContentPane().add(campoTextoNoPersonas, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 460, 100, 40));
 
         comboBoxUbicacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Terraza", "General", "Ventana" }));
-        getContentPane().add(comboBoxUbicacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 390, 100, 50));
-        getContentPane().add(campoFechaHora, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 330, 230, 40));
+        getContentPane().add(comboBoxUbicacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 390, 100, 50));
 
         btnHacerReserva.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnReserva.png"))); // NOI18N
         btnHacerReserva.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -102,6 +129,9 @@ public class FrmReserva extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnHacerReserva, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 600, -1, -1));
+        getContentPane().add(fldFechaHora, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 330, 350, 40));
+
+        getContentPane().add(comboBoxNombreCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 210, 230, 50));
 
         fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FrmMesas.jpg"))); // NOI18N
         getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -118,32 +148,14 @@ public class FrmReserva extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegresarMouseClicked
 
     private void btnHacerReservaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnHacerReservaMouseClicked
-//        // TODO add your handling code here:
-//        String nombreCompleto = campoTextoNombreCompleto.getText();
-//        String telefono = campoTextoTelefono.getText();
-//        String fechaHora = campoTextoApellidoMaterno.getText();
-//        String ubicacion = comboBoxUbicacion.getSelectedItem();
-//        String noPersonas = campoTextoNoPersonas.getText();
-//
-//        String contraseniaEncriptada = encriptar.encrypt(contrasenia, 3);
-//
-//        try {
-//            CarreraNegocio carreraNegocio = new CarreraNegocio();
-//            int carrera = comboBoxCarrera.getSelectedIndex();
-////        obtenerCarreraDTOfromComboBox(carreraNegocio.buscarCarreras(), carrera);
-//            CarreraDTO carreraDTO = carreraNegocio.buscarCarreras().get(carrera);
-//
-//            EstudianteDTO estudiante = new EstudianteDTO(nombre, aPaterno, aMaterno, contraseniaEncriptada, estatusCarreraDefault, carreraDTO);
-//
-//            estudiante.setCarrera(carreraDTO);
-//
-//            estudianteNegocio.guardarEstudiante(estudiante);
-//            JOptionPane.showMessageDialog(this, "El estudiante se ha agregado correctamente.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-//
-//        } catch (Exception e) {
-//            JOptionPane.showMessageDialog(this, "Ha ocurrido un error inesperado: \n" + e, "ERROR", JOptionPane.ERROR_MESSAGE);
-//        }
+        
+        
+        
     }//GEN-LAST:event_btnHacerReservaMouseClicked
+
+    private void none(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_none
+        // TODO add your handling code here:
+    }//GEN-LAST:event_none
 
     /**
      * @param args the command line arguments
@@ -183,11 +195,11 @@ public class FrmReserva extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnHacerReserva;
     private javax.swing.JLabel btnRegresar;
-    private javax.swing.JTextField campoFechaHora;
     private javax.swing.JTextField campoTextoNoPersonas;
-    private javax.swing.JTextField campoTextoNombreCompleto;
     private javax.swing.JTextField campoTextoTelefono;
+    private javax.swing.JComboBox<String> comboBoxNombreCliente;
     private javax.swing.JComboBox<String> comboBoxUbicacion;
+    private javax.swing.JPanel fldFechaHora;
     private javax.swing.JLabel fondo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
