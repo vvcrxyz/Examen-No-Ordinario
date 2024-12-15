@@ -23,7 +23,6 @@ public class ClienteNegocio {
         ClienteEntidad entidad = new ClienteEntidad();
         entidad.setId(dto.getId());
         entidad.setNombreCompleto(dto.getNombreCompleto());
-        entidad.setEmail(dto.getEmail());
         entidad.setTelefono(dto.getTelefono()); 
         return entidad;
     }

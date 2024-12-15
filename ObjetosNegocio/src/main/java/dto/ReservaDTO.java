@@ -6,6 +6,7 @@ package dto;
 
 import entidades.ReservaEntidad;
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -17,8 +18,7 @@ public class ReservaDTO {
     Long id;
     String nombreCompleto;
     String telefono;
-    Date fechaReserva;
-    Time horaReserva;
+    LocalDateTime fechaHoraReserva;
     String ubicacion;
     int numPersonas;
     private double costoReserva;
@@ -26,11 +26,10 @@ public class ReservaDTO {
     public ReservaDTO() {
     }
 
-    public ReservaDTO(String nombreCompleto, String telefono, Date fechaReserva, Time horaReserva, String ubicacion, int numPersonas, double costoReserva) {
+    public ReservaDTO(String nombreCompleto, String telefono, LocalDateTime fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva) {
         this.nombreCompleto = nombreCompleto;
         this.telefono = telefono;
-        this.fechaReserva = fechaReserva;
-        this.horaReserva = horaReserva;
+        this.fechaHoraReserva = fechaHoraReserva;
         this.ubicacion = ubicacion;
         this.numPersonas = numPersonas;
         this.costoReserva = costoReserva;
@@ -38,12 +37,11 @@ public class ReservaDTO {
     
     
 
-    public ReservaDTO(Long id, String nombreCompleto, String telefono, Date fechaReserva, Time horaReserva, String ubicacion, int numPersonas, double costoReserva) {
+    public ReservaDTO(Long id, String nombreCompleto, String telefono, LocalDateTime fechaHoraReserva ,String ubicacion, int numPersonas, double costoReserva) {
         this.id = id;
         this.nombreCompleto = nombreCompleto;
         this.telefono = telefono;
-        this.fechaReserva = fechaReserva;
-        this.horaReserva = horaReserva;
+        this.fechaHoraReserva = fechaHoraReserva;
         this.ubicacion = ubicacion;
         this.numPersonas = numPersonas;
         this.costoReserva = costoReserva;
@@ -53,8 +51,8 @@ public class ReservaDTO {
         this.id = r.getId();
         this.nombreCompleto = r.getNombreCompleto();
         this.telefono = r.getTelefono();
-        this.fechaReserva = r.getFechaReserva();
-        this.horaReserva = r.getHoraReserva();
+        this.fechaHoraReserva = r.getFechaHoraReserva();
+ 
         this.ubicacion = r.getUbicacion();
         this.numPersonas = r.getNumPersonas();
         this.costoReserva = r.getCostoReserva();        
@@ -84,20 +82,12 @@ public class ReservaDTO {
         this.telefono = telefono;
     }
 
-    public Date getFechaReserva() {
-        return fechaReserva;
+    public LocalDateTime getFechaHoraReserva() {
+        return fechaHoraReserva;
     }
 
-    public void setFechaReserva(Date fechaReserva) {
-        this.fechaReserva = fechaReserva;
-    }
-
-    public Time getHoraReserva() {
-        return horaReserva;
-    }
-
-    public void setHoraReserva(Time horaReserva) {
-        this.horaReserva = horaReserva;
+    public void setFechaHoraReserva(LocalDateTime fechaHoraReserva) {
+        this.fechaHoraReserva = fechaHoraReserva;
     }
 
     public String getUbicacion() {
@@ -126,7 +116,7 @@ public class ReservaDTO {
 
     @Override
     public String toString() {
-        return "ReservaDTO{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + ", fechaReserva=" + fechaReserva + ", horaReserva=" + horaReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + ", costoReserva=" + costoReserva + '}';
+        return "ReservaDTO{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + ", fechaHoraReserva=" + fechaHoraReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + ", costoReserva=" + costoReserva + '}';
     }
 
 

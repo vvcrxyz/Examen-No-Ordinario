@@ -82,14 +82,13 @@ public class FrmInsercionMasiva extends javax.swing.JFrame {
 
             for (int i = 0; i < 20; i++) {
                 String nombreCompleto = nombres[random.nextInt(nombres.length)] + " " + apellidos[random.nextInt(apellidos.length)];
-                String email = "cliente" + (i+1) + "@gmail.com";
                 String telefono = "644-" + (random.nextInt(9000) + random.nextInt(9000));
 
                 // Encriptar el número de teléfono
                 String telefonoEncriptado = Encriptado.encrypt(telefono, secretKey);
 
                 // Crear el ClienteDTO
-                ClienteDTO cliente = new ClienteDTO(nombreCompleto, email, telefonoEncriptado);
+                ClienteDTO cliente = new ClienteDTO(nombreCompleto, telefonoEncriptado);
 
                 // Guardar el cliente a través de la lógica de negocio
                 clienteNegocio.guardarCliente(cliente);

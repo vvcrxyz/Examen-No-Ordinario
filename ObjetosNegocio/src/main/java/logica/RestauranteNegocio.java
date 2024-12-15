@@ -22,9 +22,6 @@ public class RestauranteNegocio {
     private RestauranteEntidad convertir(RestauranteDTO dto) {
         RestauranteEntidad entidad = new RestauranteEntidad();
         entidad.setId(dto.getId());
-        entidad.setNombre(dto.getNombre());
-        entidad.setDireccion(dto.getDireccion());
-        entidad.setTelefono(dto.getTelefono());
         entidad.setHoraApertura(dto.getHoraApertura());
         entidad.setHoraCierre(dto.getHoraCierre());
         return entidad;

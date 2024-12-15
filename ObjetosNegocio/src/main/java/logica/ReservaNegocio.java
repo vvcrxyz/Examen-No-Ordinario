@@ -32,9 +32,7 @@ public class ReservaNegocio {
         entidad.setId(dto.getId());
         entidad.setNombreCompleto(dto.getNombreCompleto());
         entidad.setTelefono(dto.getTelefono());
-        // Conversión explícita
-        entidad.setFechaReserva(new java.sql.Date(dto.getFechaReserva().getTime()));
-        entidad.setHoraReserva(dto.getHoraReserva());
+        entidad.setFechaHoraReserva(dto.getFechaHoraReserva());
         entidad.setUbicacion(dto.getUbicacion());
         entidad.setNumPersonas(dto.getNumPersonas());
         entidad.setCostoReserva(dto.getCostoReserva());
@@ -90,37 +88,6 @@ public class ReservaNegocio {
             reservas.add(convertir(entidad));
         }
         return reservas;
-    }
-    
-    public boolean verificarDisponibilidadMesa(LocalDateTime fechaHoraReserva, String ubicacion) {
-        if (fechaHoraReserva == null || ubicacion == null || ubicacion.isEmpty()) {
-            throw new IllegalArgumentException("Fecha, hora y ubicación no pueden ser nulos o vacíos.");
-        }
-
-        // Obtiene todas las reservas desde el DAO
-        List<ReservaDTO> reservas = buscarTodasReservas();
-
-        for (ReservaDTO reserva : reservas) {
-            // Conversión de la fecha y hora de la reserva a LocalDateTime
-            LocalDateTime fechaHoraReservaExistente = convertirAFechaHora(reserva);
-
-            // Verifica si hay una coincidencia exacta en la fecha, hora y ubicación
-            if (fechaHoraReservaExistente.equals(fechaHoraReserva) && reserva.getUbicacion().equalsIgnoreCase(ubicacion)) {
-                return false; // La mesa ya está reservada en ese momento y lugar
-            }
-        }
-        return true; // La mesa está disponible
-    }
-
-    /**
-     * Convierte el DTO de reserva en un objeto LocalDateTime a partir de la fecha y la hora de la reserva.
-     */
-    private LocalDateTime convertirAFechaHora(ReservaDTO reserva) {
-        LocalDate localDateReserva = reserva.getFechaReserva().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-        LocalTime localTimeReserva = reserva.getHoraReserva().toLocalTime();
-        return LocalDateTime.of(localDateReserva, localTimeReserva);
     }
 
 }
