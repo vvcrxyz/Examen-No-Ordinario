@@ -1,10 +1,8 @@
 package entidades;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,14 +29,10 @@ public class ReservaEntidad implements Serializable {
     private String nombreCompleto;
 
     @Column(name = "telefono", length = 10, nullable = false)
-    @Convert(converter = TelefonoCifradoConverter.class) // Implementa cifrado para la base de datos
     private String telefono;
 
-    @Column(name = "fechaReserva", nullable = false)
-    private Date fechaReserva;
-
-    @Column(name = "horaReserva", nullable = false)
-    private Time horaReserva;
+    @Column(name = "fechaHoraReserva", nullable = false)
+    private LocalDateTime fechaHoraReserva; // Cambiado a LocalDateTime
 
     @Column(name = "ubicacion", nullable = false)
     private String ubicacion;
@@ -64,28 +58,37 @@ public class ReservaEntidad implements Serializable {
     @JoinColumn(name = "idRestaurante", nullable = false)
     private RestauranteEntidad restaurante;
 
-
     // Constructor por defecto
     public ReservaEntidad() {
     }
 
-    // Constructor con parámetros
-    public ReservaEntidad(Long id, String nombreCompleto, String telefono, Date fechaReserva, 
-                          Time horaReserva, String ubicacion, int numPersonas, double costoReserva, 
-                          String estado, MesaEntidad mesa) {
-        this.id = id;
+    public ReservaEntidad(String nombreCompleto, String telefono, LocalDateTime fechaHoraReserva, 
+                          String ubicacion, int numPersonas, double costoReserva, String estado) {
         this.nombreCompleto = nombreCompleto;
         this.telefono = telefono;
-        this.fechaReserva = fechaReserva;
-        this.horaReserva = horaReserva;
+        this.fechaHoraReserva = fechaHoraReserva;
         this.ubicacion = ubicacion;
         this.numPersonas = numPersonas;
         this.costoReserva = costoReserva;
         this.estado = estado;
     }
 
-    // Getters y Setters
+    public ReservaEntidad(String nombreCompleto, String telefono, LocalDateTime fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva, String estado, ClienteEntidad cliente, MesaEntidad mesa, RestauranteEntidad restaurante) {
+        this.nombreCompleto = nombreCompleto;
+        this.telefono = telefono;
+        this.fechaHoraReserva = fechaHoraReserva;
+        this.ubicacion = ubicacion;
+        this.numPersonas = numPersonas;
+        this.costoReserva = costoReserva;
+        this.estado = estado;
+        this.cliente = cliente;
+        this.mesa = mesa;
+        this.restaurante = restaurante;
+    }
 
+    
+
+    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -110,20 +113,12 @@ public class ReservaEntidad implements Serializable {
         this.telefono = telefono;
     }
 
-    public Date getFechaReserva() {
-        return fechaReserva;
+    public LocalDateTime getFechaHoraReserva() {
+        return fechaHoraReserva;
     }
 
-    public void setFechaReserva(Date fechaReserva) {
-        this.fechaReserva = fechaReserva;
-    }
-
-    public Time getHoraReserva() {
-        return horaReserva;
-    }
-
-    public void setHoraReserva(Time horaReserva) {
-        this.horaReserva = horaReserva;
+    public void setFechaHoraReserva(LocalDateTime fechaHoraReserva) {
+        this.fechaHoraReserva = fechaHoraReserva;
     }
 
     public String getUbicacion() {
@@ -160,7 +155,9 @@ public class ReservaEntidad implements Serializable {
 
     @Override
     public String toString() {
-        return "ReservaEntidad{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + ", fechaReserva=" + fechaReserva + ", horaReserva=" + horaReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + ", costoReserva=" + costoReserva + ", estado=" + estado + ", cliente=" + cliente + ", mesa=" + mesa + ", restaurante=" + restaurante + '}';
+        return "ReservaEntidad{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + 
+               ", fechaHoraReserva=" + fechaHoraReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + 
+               ", costoReserva=" + costoReserva + ", estado=" + estado + ", cliente=" + cliente + ", mesa=" + mesa + 
+               '}';
     }
-
 }

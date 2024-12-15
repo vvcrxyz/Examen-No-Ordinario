@@ -1,16 +1,11 @@
 package entidades;
 
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -38,13 +33,7 @@ public class MesaEntidad implements Serializable {
 
     @Column(name = "ubicacion", length = 20, nullable = false)
     private String ubicacion; // Terraza, Ventana, General
-    
-    @ManyToOne
-    @JoinColumn(name = "idRestaurante", nullable = false)
-    private RestauranteEntidad restaurante;
 
-    @OneToMany(mappedBy = "mesa", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReservaEntidad> reservaciones;
     
   
 
@@ -101,6 +90,6 @@ public class MesaEntidad implements Serializable {
 
     @Override
     public String toString() {
-        return "MesaEntidad{" + "id=" + id + ", codigoMesa=" + codigoMesa + ", tipo=" + tipo + ", capacidad=" + capacidad + ", ubicacion=" + ubicacion + ", restaurante=" + restaurante + ", reservaciones=" + reservaciones + '}';
+        return "MesaEntidad{" + "id=" + id + ", codigoMesa=" + codigoMesa + ", tipo=" + tipo + ", capacidad=" + capacidad + ", ubicacion=" + ubicacion + '}';
     }
 }

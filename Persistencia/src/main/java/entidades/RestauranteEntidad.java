@@ -7,13 +7,14 @@ package entidades;
 import java.io.Serializable;
 import java.sql.Time;
 import java.util.List;
-import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 /**
@@ -29,74 +30,51 @@ public class RestauranteEntidad implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @Column(name = "nombre",length = 50, nullable = false)
-    private String nombre;
-    
-    @Column(name = "direccion", length = 50, nullable = false)
-    private String direccion;
-    
-    @Column(name = "telefono",length = 10, nullable = false)
-    private String telefono;
-    
     @Column(name = "horaApertura", nullable = false)
     private Time horaApertura;
     
     @Column(name = "horaCierre", nullable = false)
     private Time horaCierre;
-    
-    @OneToMany(mappedBy = "restaurante", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MesaEntidad> mesas;
-
-    @OneToMany(mappedBy = "restaurante", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReservaEntidad> reservaciones;
+   
+    @ElementCollection
+    @CollectionTable(name = "restaurante_ubicaciones", joinColumns = @JoinColumn(name = "restaurante_id"))
+    @Column(nullable = false)
+    private List<String> ubicacion;
 
 
 
     public RestauranteEntidad() {
     }
 
-    public RestauranteEntidad(Long id, String nombre, String direccion, String telefono, Time horaApertura, Time horaCierre) {
-        this.id = id;
-        this.nombre = nombre;
-        this.direccion = direccion;
-        this.telefono = telefono;
+    public RestauranteEntidad(Time horaApertura, Time horaCierre) {
         this.horaApertura = horaApertura;
         this.horaCierre = horaCierre;
     }
-    
 
     
     
+    public RestauranteEntidad(Time horaApertura, Time horaCierre, List<String> ubicacion) {
+        this.horaApertura = horaApertura;
+        this.horaCierre = horaCierre;
+        this.ubicacion = ubicacion;
+    }
+
+    
+    
+    public RestauranteEntidad(Long id, Time horaApertura, Time horaCierre, List<String> ubicacion) {
+        this.horaApertura = horaApertura;
+        this.horaCierre = horaCierre;
+        this.ubicacion = ubicacion;
+
+    }
+    
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
     }
 
     public Time getHoraApertura() {
@@ -117,7 +95,7 @@ public class RestauranteEntidad implements Serializable {
 
     @Override
     public String toString() {
-        return "RestauranteEntidad{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + ", telefono=" + telefono + ", horaApertura=" + horaApertura + ", horaCierre=" + horaCierre + ", mesas=" + mesas + ", reservaciones=" + reservaciones + '}';
+        return "RestauranteEntidad{" + "id=" + id + ", horaApertura=" + horaApertura + ", horaCierre=" + horaCierre +'}';
     }
 
     
