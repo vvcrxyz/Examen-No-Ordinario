@@ -4,6 +4,7 @@
  */
 package dao;
 
+import conexion.ConexionBD;
 import entidades.ClienteEntidad;
 import interfaces.ICliente;
 import java.util.List;
@@ -57,64 +58,6 @@ public class ClienteDAO implements ICliente {
     }
 
 
-    public void eliminarCliente(ClienteEntidad cliente) {
-        try {
-            // Construimos el EntityManager
-            managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
-            entityManager = managerFactory.createEntityManager();
-            transaction = entityManager.getTransaction();
-            transaction.begin();
-
-            // Eliminamos la entidad de la base de datos
-            entityManager.remove(entityManager.contains(cliente) ? cliente : entityManager.merge(cliente));
-
-            // Todo salió bien, se confirma la transacción
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                // En caso de error, se hace rollback de la transacción
-                transaction.rollback();
-                JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
-            }
-            e.printStackTrace(); // Imprime la traza del error en la consola
-        } finally {
-            if (entityManager != null) {
-                // Cerramos el EntityManager
-                entityManager.close();
-            }
-        }
-    }
-
-
-    public void modificarCliente(ClienteEntidad cliente) {
-        try {
-            // Construimos el EntityManager
-            managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
-            entityManager = managerFactory.createEntityManager();
-            transaction = entityManager.getTransaction();
-            transaction.begin();
-
-            // Actualizamos la entidad en la base de datos
-            entityManager.merge(cliente);
-
-            // Todo salió bien, se confirma la transacción
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                // En caso de error, se hace rollback de la transacción
-                transaction.rollback();
-                JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
-            }
-            e.printStackTrace(); // Imprime la traza del error en la consola
-        } finally {
-            if (entityManager != null) {
-                // Cerramos el EntityManager
-                entityManager.close();
-            }
-        }
-    }
-
-
     public ClienteEntidad buscarUnCliente(Long id) {
 
         try {
@@ -140,6 +83,7 @@ public class ClienteDAO implements ICliente {
 
     }
 
+ 
 
     public List<ClienteEntidad> buscarTodosClientes() {
 

@@ -32,11 +32,6 @@ public class RestauranteEntidad implements Serializable {
     
     @Column(name = "horaCierre", nullable = false)
     private Time horaCierre;
-   
-    @Column(nullable = false)
-    private List<String> ubicacion;
-
-
 
     public RestauranteEntidad() {
     }
@@ -45,21 +40,10 @@ public class RestauranteEntidad implements Serializable {
         this.horaApertura = horaApertura;
         this.horaCierre = horaCierre;
     }
-
     
-    
-    public RestauranteEntidad(Time horaApertura, Time horaCierre, List<String> ubicacion) {
+    public RestauranteEntidad(Long id, Time horaApertura, Time horaCierre) {
         this.horaApertura = horaApertura;
         this.horaCierre = horaCierre;
-        this.ubicacion = ubicacion;
-    }
-
-    
-    
-    public RestauranteEntidad(Long id, Time horaApertura, Time horaCierre, List<String> ubicacion) {
-        this.horaApertura = horaApertura;
-        this.horaCierre = horaCierre;
-        this.ubicacion = ubicacion;
 
     }
     

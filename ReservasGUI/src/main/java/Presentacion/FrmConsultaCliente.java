@@ -4,17 +4,42 @@
  */
 package Presentacion;
 
+import com.github.lgooddatepicker.components.DateTimePicker;
+import entidades.ReservaEntidad;
+import java.awt.FlowLayout;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author limon
  */
 public class FrmConsultaCliente extends javax.swing.JFrame {
 
+    DateTimePicker dateTimePicker = new DateTimePicker();
+    
     /**
      * Creates new form FrmConsultaCliente
      */
     public FrmConsultaCliente() {
         initComponents();
+        
+         fldFechaReserva.setLayout(new FlowLayout());
+        fldFechaReserva.add(dateTimePicker);
+    }
+    
+    private void mostrarReservas(List<ReservaEntidad> reservas) {
+        // Mostrar las reservas encontradas (esto puede hacerse usando un JTable o cualquier otro componente de UI)
+        for (ReservaEntidad reserva : reservas) {
+            // Aquí puedes mostrar los detalles de las reservas, por ejemplo, agregándolos a un JTable
+            System.out.println("ID: " + reserva.getId() + ", Cliente: " + reserva.getNombreCompleto() + ", Fecha: " + reserva.getFechaHoraReserva());
+        }
     }
 
     /**
@@ -29,12 +54,12 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
         btnRegresar = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         campoTextoTelefono = new javax.swing.JTextField();
-        campoFechaReserva = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         campoTextoNombreCompleto = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         btnMostrar = new javax.swing.JLabel();
+        fldFechaReserva = new javax.swing.JPanel();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -54,7 +79,6 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
         jLabel2.setText("Consulta cliente");
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 30, -1, -1));
         getContentPane().add(campoTextoTelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 300, 230, 40));
-        getContentPane().add(campoFechaReserva, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 360, 230, 40));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
@@ -80,6 +104,7 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnMostrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 530, -1, -1));
+        getContentPane().add(fldFechaReserva, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 360, 350, 40));
 
         fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FrmMesas.jpg"))); // NOI18N
         getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -97,9 +122,53 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
 
     private void btnMostrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMostrarMouseClicked
         // TODO add your handling code here:
-        FrmSeleccionarCliente frm = new FrmSeleccionarCliente();
-        frm.setVisible(true);
-        this.dispose();
+         // Obtener los valores de los campos de búsqueda
+    String nombreCliente = campoTextoNombreCompleto.getText().trim();
+    String telefonoCliente = campoTextoTelefono.getText().trim();
+    LocalDateTime fechaReserva = dateTimePicker.getDateTimePermissive();
+    
+    // Construir la consulta basada en los filtros ingresados
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionJPA");
+    EntityManager em = emf.createEntityManager();
+    
+    StringBuilder queryStr = new StringBuilder("SELECT r FROM ReservaEntidad r WHERE 1=1");
+
+if (!nombreCliente.isEmpty()) {
+    queryStr.append(" AND r.cliente.nombreCompleto LIKE :nombreCliente");
+}
+
+if (!telefonoCliente.isEmpty()) {
+    queryStr.append(" AND r.cliente.telefono LIKE :telefonoCliente");
+}
+
+if (fechaReserva != null) {
+    queryStr.append(" AND r.fechaHoraReserva = :fechaReserva");
+}
+
+TypedQuery<ReservaEntidad> query = em.createQuery(queryStr.toString(), ReservaEntidad.class);
+    
+    // Establecer los parámetros de la consulta
+    if (!nombreCliente.isEmpty()) {
+        query.setParameter("nombreCliente", "%" + nombreCliente + "%");
+    }
+    if (!telefonoCliente.isEmpty()) {
+        query.setParameter("telefonoCliente", "%" + telefonoCliente + "%");
+    }
+    if (fechaReserva != null) {
+        query.setParameter("fechaReserva", Timestamp.valueOf(fechaReserva));
+    }
+    
+    // Ejecutar la consulta y obtener los resultados
+    List<ReservaEntidad> reservas = query.getResultList();
+    
+    // Si no se encuentran reservas, mostrar un mensaje
+    if (reservas.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "No se encontraron reservas con los criterios de búsqueda.", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        // Si se encuentran reservas, mostrarlas (puedes usar una tabla o lista para mostrar los resultados)
+        mostrarReservas(reservas);
+    }
+        
     }//GEN-LAST:event_btnMostrarMouseClicked
 
     /**
@@ -140,9 +209,9 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnMostrar;
     private javax.swing.JLabel btnRegresar;
-    private javax.swing.JTextField campoFechaReserva;
     private javax.swing.JTextField campoTextoNombreCompleto;
     private javax.swing.JTextField campoTextoTelefono;
+    private javax.swing.JPanel fldFechaReserva;
     private javax.swing.JLabel fondo;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;

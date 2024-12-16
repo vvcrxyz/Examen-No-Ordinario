@@ -4,17 +4,27 @@
  */
 package Presentacion;
 
+import com.github.lgooddatepicker.components.TimePicker;
+import dto.RestauranteDTO;
+import javax.swing.JOptionPane;
+import logica.RestauranteNegocio;
 /**
  *
  * @author limon
  */
 public class FrmCambiarHorario extends javax.swing.JFrame {
 
+    TimePicker timePicker = new TimePicker();
+    TimePicker timePicker2 = new TimePicker();
+    
     /**
      * Creates new form FrmCambiarHorario
      */
     public FrmCambiarHorario() {
         initComponents();
+        
+        fldHoraApertura.add(timePicker);
+        fldHoraCierre.add(timePicker2);
     }
 
     /**
@@ -31,6 +41,8 @@ public class FrmCambiarHorario extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         btnGuardar = new javax.swing.JLabel();
+        fldHoraCierre = new javax.swing.JPanel();
+        fldHoraApertura = new javax.swing.JPanel();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -68,6 +80,8 @@ public class FrmCambiarHorario extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 550, -1, -1));
+        getContentPane().add(fldHoraCierre, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 300, 120, 40));
+        getContentPane().add(fldHoraApertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 300, 120, 40));
 
         fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FrmMesas.jpg"))); // NOI18N
         getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -85,6 +99,27 @@ public class FrmCambiarHorario extends javax.swing.JFrame {
 
     private void btnGuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGuardarMouseClicked
         // TODO add your handling code here:
+        try {
+        // Obtener las horas seleccionadas de los TimePickers
+        java.sql.Time horaApertura = java.sql.Time.valueOf(timePicker.getTime());
+        java.sql.Time horaCierre = java.sql.Time.valueOf(timePicker2.getTime());
+
+        // Crear el DTO de Restaurante con los datos
+        RestauranteDTO restaurante = new RestauranteDTO();
+        restaurante.setHoraApertura(horaApertura);
+        restaurante.setHoraCierre(horaCierre);
+
+        // Llamar a la lógica de negocio para guardar los datos
+        RestauranteNegocio negocio = new RestauranteNegocio();
+        negocio.guardarRestaurante(restaurante);
+
+        // Mostrar mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Horario guardado correctamente.");
+    } catch (Exception ex) {
+        // Manejar errores
+        JOptionPane.showMessageDialog(this, "Error al guardar horario: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    }
     }//GEN-LAST:event_btnGuardarMouseClicked
 
     /**
@@ -125,6 +160,8 @@ public class FrmCambiarHorario extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnGuardar;
     private javax.swing.JLabel btnRegresar;
+    private javax.swing.JPanel fldHoraApertura;
+    private javax.swing.JPanel fldHoraCierre;
     private javax.swing.JLabel fondo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

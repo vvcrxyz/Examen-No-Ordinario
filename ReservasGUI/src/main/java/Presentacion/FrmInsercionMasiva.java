@@ -83,35 +83,35 @@ public class FrmInsercionMasiva extends javax.swing.JFrame {
 
     private void btnGenerarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGenerarMouseClicked
         // TODO add your handling code here:
-        Random random = new Random();
-        String[] nombres = {"Nomar", "Alberto", "Bryan", "Nicole", "Ramon", "Melania", "Emigdia", "Luis", "Mario", "Omar"};
-        String[] apellidos = {"Iribe", "Limon", "Quintero", "Corral", "Pérez", "Rascon", "Ortiz", "Mendoza", "Sanchez", "Navarro"};
+    Random random = new Random();
+    String[] nombres = {"Nomar", "Alberto", "Bryan", "Nicole", "Ramon", "Melania", "Emigdia", "Luis", "Mario", "Omar"};
+    String[] apellidos = {"Iribe", "Limon", "Quintero", "Corral", "Pérez", "Rascon", "Ortiz", "Mendoza", "Sanchez", "Navarro"};
 
-        try {
-            String secretKey = "1234567890123456";  // Clave secreta (debe ser de 16 caracteres para AES-128)
+    try {
+        String secretKey = "1234567890123456";  // Clave secreta (debe ser de 16 caracteres para AES-128)
 
-            for (int i = 0; i < 20; i++) {
-                String nombreCompleto = nombres[random.nextInt(nombres.length)] + " " + apellidos[random.nextInt(apellidos.length)];
-                String telefono = "644-" + (random.nextInt(9000) + random.nextInt(9000));
+        for (int i = 0; i < 20; i++) {
+            // Generar nombre completo aleatorio
+            String nombreCompleto = nombres[random.nextInt(nombres.length)] + " " + apellidos[random.nextInt(apellidos.length)];
 
-                // Encriptar el número de teléfono
-                String telefonoEncriptado = Encriptado.encrypt(telefono, secretKey);
+            // Generar teléfono aleatorio con el formato "644-XXXXXXX"
+            String telefono = "644-" + String.format("%07d", random.nextInt(10000000)); // Asegura 7 dígitos
 
-                // Crear el ClienteDTO
-                ClienteDTO cliente = new ClienteDTO(nombreCompleto, telefonoEncriptado);
+            // Encriptar el número de teléfono
+            String telefonoEncriptado = Encriptado.encrypt(telefono, secretKey);
 
-                // Guardar el cliente a través de la lógica de negocio
-                clienteNegocio.guardarCliente(cliente);
-            }
+            // Crear el ClienteDTO
+            ClienteDTO cliente = new ClienteDTO(nombreCompleto, telefonoEncriptado);
 
-            JOptionPane.showMessageDialog(this, "Se han insertado 20 clientes correctamente.");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Ocurrió un error al insertar clientes: " + e.getMessage());
-            e.printStackTrace();
-            }
-        FrmInicio frm = new FrmInicio();
-        frm.setVisible(true);
-        this.dispose();
+            // Guardar el cliente a través de la lógica de negocio
+            clienteNegocio.guardarCliente(cliente);
+        }
+
+        JOptionPane.showMessageDialog(this, "Se han insertado 20 clientes correctamente.");
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Ocurrió un error al insertar clientes: " + e.getMessage());
+        e.printStackTrace();
+    }
     }//GEN-LAST:event_btnGenerarMouseClicked
 
     private void btnRegresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegresarMouseClicked

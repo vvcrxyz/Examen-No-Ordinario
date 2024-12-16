@@ -40,16 +40,6 @@ public class ClienteNegocio {
         clienteDAO.guardarCliente(convertir(c));
     }
 
-    // Modificar un cliente
-    public void modificarCliente(ClienteDTO c) {
-        clienteDAO.modificarCliente(convertir(c));
-    }
-
-    // Eliminar un cliente
-    public void eliminarCliente(ClienteDTO c) {
-        clienteDAO.eliminarCliente(convertir(c));
-    }
-
     // Buscar un cliente por ID
     public ClienteDTO buscarCliente(Long id) {
         ClienteEntidad entidad = clienteDAO.buscarUnCliente(id);

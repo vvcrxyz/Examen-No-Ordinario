@@ -15,13 +15,7 @@ public interface ICliente {
     
     public void guardarCliente(ClienteEntidad cliente);
 
- 
-    public void eliminarCliente(ClienteEntidad cliente);
-
-
-    public void modificarCliente(ClienteEntidad cliente);
-
-
+    
     public ClienteEntidad buscarUnCliente(Long id);
 
 

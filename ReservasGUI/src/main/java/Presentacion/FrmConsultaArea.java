@@ -4,6 +4,23 @@
  */
 package Presentacion;
 
+import com.github.lgooddatepicker.components.DateTimePicker;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import entidades.ReservaEntidad;
+import java.awt.FlowLayout;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
+import javax.swing.JOptionPane;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+
+
 
 /**
  *
@@ -11,7 +28,8 @@ package Presentacion;
  */
 public class FrmConsultaArea extends javax.swing.JFrame {
 
-
+    DateTimePicker dateTimePicker = new DateTimePicker();
+    DateTimePicker dateTimePicker2 = new DateTimePicker();
     
     /**
      * Creates new form FrmConsultaArea
@@ -19,8 +37,69 @@ public class FrmConsultaArea extends javax.swing.JFrame {
     public FrmConsultaArea() {
         initComponents();
         
-        
+        fldFechaInicio.setLayout(new FlowLayout());
+        fldFechaInicio.add(dateTimePicker);
+        fldFechaFin.setLayout(new FlowLayout());
+        fldFechaFin.add(dateTimePicker2);
     }
+    
+       public void generarReporteArea(LocalDateTime fechaInicio, LocalDateTime fechaFin, String tipoMesa, String ubicacion) {
+    // Set the file path for the report
+    String reportFilePath = "Reporte Consulta Area.pdf";
+
+    // Create a PdfWriter object and initialize the PdfDocument
+    try (PdfWriter writer = new PdfWriter(reportFilePath)) {
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc);
+
+        // Add title to the report
+        document.add(new Paragraph("Reporte de Reservas por Área")
+            .setBold()
+            .setFontSize(20)
+            .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER));
+
+        // Add filter information
+        document.add(new Paragraph("Fecha Inicio: " + fechaInicio.toString()));
+        document.add(new Paragraph("Fecha Fin: " + fechaFin.toString()));
+        document.add(new Paragraph("Tipo de Mesa: " + tipoMesa));
+        document.add(new Paragraph("Ubicación: " + ubicacion));
+
+        // Add the data from the database (this is where you query the database)
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionJPA");
+        EntityManager em = emf.createEntityManager();
+
+        // Construct a query to fetch reservations based on the filters
+        String queryStr = "SELECT r FROM ReservaEntidad r WHERE r.fechaHoraReserva BETWEEN :fechaInicio AND :fechaFin "
+            + "AND r.codigoMesa = :tipoMesa AND r.ubicacion = :ubicacion";  // Using codigoMesa and ubicacion
+        TypedQuery<ReservaEntidad> query = em.createQuery(queryStr, ReservaEntidad.class);
+        query.setParameter("fechaInicio", Timestamp.valueOf(fechaInicio));
+        query.setParameter("fechaFin", Timestamp.valueOf(fechaFin));
+        query.setParameter("tipoMesa", tipoMesa);  // Now this refers to codigoMesa
+        query.setParameter("ubicacion", ubicacion);
+
+        List<ReservaEntidad> reservas = query.getResultList();
+
+        // Add the reservation details to the report
+        for (ReservaEntidad reserva : reservas) {
+            document.add(new Paragraph("Reserva ID: " + reserva.getId()));
+            document.add(new Paragraph("Cliente: " + reserva.getNombreCompleto()));
+            document.add(new Paragraph("Mesa: " + reserva.getCodigoMesa()));  // Use codigoMesa
+            document.add(new Paragraph("Fecha y Hora: " + reserva.getFechaHoraReserva().toString()));
+            document.add(new Paragraph("----------------------------------------------------"));
+        }
+
+        // Close the document
+        document.close();
+
+        // Provide feedback to the user
+        JOptionPane.showMessageDialog(this, "Reporte generado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error al generar el reporte.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -114,9 +193,14 @@ public class FrmConsultaArea extends javax.swing.JFrame {
 
     private void btnGenerarReporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGenerarReporteMouseClicked
         // TODO add your handling code here:
-        FrmVisualizarReporte frm = new FrmVisualizarReporte();
-        frm.setVisible(true);
-        this.dispose();
+        // Obtener los valores del formulario
+        LocalDateTime fechaInicio = dateTimePicker.getDateTimePermissive();
+        LocalDateTime fechaFin = dateTimePicker2.getDateTimePermissive();
+        String tipoMesa = comboBoxTipoMesa.getSelectedItem().toString();
+        String ubicacion = comboBoxUbicacion.getSelectedItem().toString();
+
+        // Llamar a la función para generar el reporte
+        generarReporteArea(fechaInicio, fechaFin, tipoMesa, ubicacion);
     }//GEN-LAST:event_btnGenerarReporteMouseClicked
 
     /**

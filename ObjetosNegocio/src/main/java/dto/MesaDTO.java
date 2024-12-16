@@ -15,51 +15,33 @@ import java.util.List;
  */
 public class MesaDTO {
     
-    private Long id;
     private String codigoMesa;
     private String tipo;
     private int capacidad;
     private String ubicacion;
-    private RestauranteEntidad restaurante;
-    private List<ReservaEntidad> reservaciones;
 
     public MesaDTO() {
     }
 
-    public MesaDTO(String codigoMesa, String tipo, int capacidad, String ubicacion, RestauranteEntidad restaurante, List<ReservaEntidad> reservaciones) {
-        this.codigoMesa = codigoMesa;
+    public MesaDTO(String tipo, int capacidad, String ubicacion) {
         this.tipo = tipo;
         this.capacidad = capacidad;
         this.ubicacion = ubicacion;
-        this.restaurante = restaurante;
-        this.reservaciones = reservaciones;
     }
 
-    public MesaDTO(Long id, String codigoMesa, String tipo, int capacidad, String ubicacion, RestauranteEntidad restaurante, List<ReservaEntidad> reservaciones) {
-        this.id = id;
+    public MesaDTO(String codigoMesa, String tipo, int capacidad, String ubicacion) {
         this.codigoMesa = codigoMesa;
         this.tipo = tipo;
         this.capacidad = capacidad;
         this.ubicacion = ubicacion;
-        this.restaurante = restaurante;
-        this.reservaciones = reservaciones;
     }
     
     public MesaDTO(MesaEntidad m) {
-        this.id = m.getId();
         this.codigoMesa = m.getCodigoMesa();
         this.tipo = m.getTipo();
         this.capacidad = m.getCapacidad();
         this.ubicacion = m.getUbicacion();
        
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getCodigoMesa() {
@@ -94,25 +76,9 @@ public class MesaDTO {
         this.ubicacion = ubicacion;
     }
 
-    public RestauranteEntidad getRestaurante() {
-        return restaurante;
-    }
-
-    public void setRestaurante(RestauranteEntidad restaurante) {
-        this.restaurante = restaurante;
-    }
-
-    public List<ReservaEntidad> getReservaciones() {
-        return reservaciones;
-    }
-
-    public void setReservaciones(List<ReservaEntidad> reservaciones) {
-        this.reservaciones = reservaciones;
-    }
-
     @Override
     public String toString() {
-        return "MesaDTO{" + "id=" + id + ", codigoMesa=" + codigoMesa + ", tipo=" + tipo + ", capacidad=" + capacidad + ", ubicacion=" + ubicacion + ", restaurante=" + restaurante + ", reservaciones=" + reservaciones + '}';
+        return "MesaDTO{" + ", codigoMesa=" + codigoMesa + ", tipo=" + tipo + ", capacidad=" + capacidad + ", ubicacion=" + ubicacion +'}';
     }
     
     

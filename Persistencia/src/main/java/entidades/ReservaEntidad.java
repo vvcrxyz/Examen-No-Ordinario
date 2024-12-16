@@ -1,8 +1,7 @@
 package entidades;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.time.LocalDateTime;
+import java.util.Calendar;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +16,7 @@ import javax.persistence.Table;
  * @author limon
  */
 @Entity
-@Table(name = "tblReserva")
+@Table(name = "tblreserva")
 public class ReservaEntidad implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,9 +25,15 @@ public class ReservaEntidad implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idReserva")
     private Long id;
-
+    
+    @Column(name = "nombreCompleto", nullable = false)
+    private String nombreCompleto;
+    
+    @Column(name = "telefono", nullable = false)
+    private String telefono;
+    
     @Column(name = "fechaHoraReserva", nullable = false)
-    private Date fechaHoraReserva; 
+    private Calendar fechaHoraReserva; 
 
     @Column(name = "ubicacion", nullable = false)
     private String ubicacion;
@@ -39,50 +44,42 @@ public class ReservaEntidad implements Serializable {
     @Column(name = "costoReserva", nullable = false)
     private double costoReserva;
 
-    @ManyToOne
-    @JoinColumn(name = "idCliente", nullable = false)
-    private ClienteEntidad cliente;
+    @Column(name = "codigoMesa", nullable = false)
+    private String codigoMesa;
 
-    @ManyToOne
-    @JoinColumn(name = "idMesa", nullable = false)
-    private MesaEntidad mesa;
-
-
-    // Constructor por defecto
     public ReservaEntidad() {
     }
 
-    public ReservaEntidad(Date fechaHoraReserva, 
-                          String ubicacion, int numPersonas, double costoReserva) {
-        this.ubicacion = ubicacion;
-        this.numPersonas = numPersonas;
-        this.costoReserva = costoReserva;
-    }
-
-    public ReservaEntidad(Date fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva, ClienteEntidad cliente, MesaEntidad mesa) {
+    public ReservaEntidad(String nombreCompleto, String telefono, Calendar fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva) {
+        this.nombreCompleto = nombreCompleto;
+        this.telefono = telefono;
         this.fechaHoraReserva = fechaHoraReserva;
         this.ubicacion = ubicacion;
         this.numPersonas = numPersonas;
         this.costoReserva = costoReserva;
-        this.cliente = cliente;
-        this.mesa = mesa;
     }
-   
-    
 
-    public ReservaEntidad(Long id, Date fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva, ClienteEntidad cliente, MesaEntidad mesa) {
+    public ReservaEntidad(String nombreCompleto, String telefono, Calendar fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva, String codigoMesa) {
+        this.nombreCompleto = nombreCompleto;
+        this.telefono = telefono;
+        this.fechaHoraReserva = fechaHoraReserva;
+        this.ubicacion = ubicacion;
+        this.numPersonas = numPersonas;
+        this.costoReserva = costoReserva;
+        this.codigoMesa = codigoMesa;
+    }
+
+    public ReservaEntidad(Long id, String nombreCompleto, String telefono, Calendar fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva, String codigoMesa) {
         this.id = id;
+        this.nombreCompleto = nombreCompleto;
+        this.telefono = telefono;
         this.fechaHoraReserva = fechaHoraReserva;
         this.ubicacion = ubicacion;
         this.numPersonas = numPersonas;
         this.costoReserva = costoReserva;
-        this.cliente = cliente;
-        this.mesa = mesa;
+        this.codigoMesa = codigoMesa;
     }
-
-
-    
-
+ 
     // Getters y Setters
     public Long getId() {
         return id;
@@ -92,11 +89,28 @@ public class ReservaEntidad implements Serializable {
         this.id = id;
     }
 
-    public Date getFechaHoraReserva() {
+    public String getNombreCompleto() {
+        return nombreCompleto;
+    }
+
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+    
+
+    public Calendar getFechaHoraReserva() {
         return fechaHoraReserva;
     }
 
-    public void setFechaHoraReserva(Date fechaHoraReserva) {
+    public void setFechaHoraReserva(Calendar fechaHoraReserva) {
         this.fechaHoraReserva = fechaHoraReserva;
     }
 
@@ -124,12 +138,19 @@ public class ReservaEntidad implements Serializable {
         this.costoReserva = costoReserva;
     }
 
-    @Override
-    public String toString() {
-        return "ReservaEntidad{" + "id=" + id + ", fechaHoraReserva=" + fechaHoraReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + ", costoReserva=" + costoReserva + ", cliente=" + cliente + ", mesa=" + mesa + '}';
+    public String getCodigoMesa() {
+        return codigoMesa;
     }
 
+    public void setCodigoMesa(String codigoMesa) {
+        this.codigoMesa = codigoMesa;
+    }
 
+    @Override
+    public String toString() {
+        return "ReservaEntidad{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + ", fechaHoraReserva=" + fechaHoraReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + ", costoReserva=" + costoReserva + ", codigoMesa=" + codigoMesa + '}';
+    }
 
+    
     
 }

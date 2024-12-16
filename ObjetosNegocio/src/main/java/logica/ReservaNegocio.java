@@ -3,11 +3,8 @@ package logica;
 import dao.ReservaDAO;
 import dto.ReservaDTO;
 import entidades.ReservaEntidad;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -28,16 +25,25 @@ public class ReservaNegocio {
         if (dto == null) {
             throw new IllegalArgumentException("El objeto ReservaDTO no puede ser nulo.");
         }
+
         ReservaEntidad entidad = new ReservaEntidad();
         entidad.setId(dto.getId());
         entidad.setNombreCompleto(dto.getNombreCompleto());
         entidad.setTelefono(dto.getTelefono());
-        entidad.setFechaHoraReserva(dto.getFechaHoraReserva());
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dto.getFechaHoraReserva().getTime());
+        entidad.setFechaHoraReserva(calendar);
+
         entidad.setUbicacion(dto.getUbicacion());
         entidad.setNumPersonas(dto.getNumPersonas());
         entidad.setCostoReserva(dto.getCostoReserva());
+        entidad.setCodigoMesa(dto.getCodigoMesa());
+        
+
         return entidad;
     }
+
 
     // Conversión de ReservaEntidad a ReservaDTO
     private ReservaDTO convertir(ReservaEntidad entidad) {

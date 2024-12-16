@@ -5,14 +5,12 @@
 package Presentacion;
 
 import dto.MesaDTO;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import utilerias.ButtonRenderer;
 import java.util.List;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
 import logica.MesaNegocio;
+import utilerias.ButtonEditor;
 
 
 /**
@@ -57,10 +55,17 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
         for (MesaDTO mesa : mesas) {
             modeloTabla.addRow(new Object[]{
                 mesa.getCodigoMesa(),
-                "Editar", // Aquí puedes manejar la acción de edición
-                "Eliminar" // Aquí puedes manejar la acción de eliminación
+                "Editar",
+                "Eliminar"
             });
         }
+
+        // Configura renderizadores y editores para las columnas de botones
+        tblMesa.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer("Editar"));
+        tblMesa.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor(tblMesa, "Editar", "s"));
+
+        tblMesa.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer("Eliminar"));
+        tblMesa.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(tblMesa, "Eliminar", "Eliminar"));
     }
     
     /**
