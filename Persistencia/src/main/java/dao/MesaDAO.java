@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
  * Proporciona métodos para guardar, eliminar, modificar, y buscar mesas en la base de datos.
  * Utiliza JPA (Java Persistence API) para interactuar con la base de datos.
  *
- * @autor limon
+ * @author limon limon
  */
 public class MesaDAO {
     

@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
  * Proporciona métodos para guardar, eliminar, modificar y buscar restaurantes en la base de datos.
  * Utiliza JPA (Java Persistence API) para interactuar con la base de datos.
  *
- * @autor limon
+ * @author limon 
  */
 public class RestauranteDAO {
     

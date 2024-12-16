@@ -10,9 +10,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Test Adan
+ * 
  *
- * @author eduar
+ * @author limon
  */
 public class ConexionBD implements IConexionBD {
 

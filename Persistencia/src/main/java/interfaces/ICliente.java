@@ -14,7 +14,7 @@ import java.util.List;
  * Incluye métodos para guardar un cliente, buscar un cliente por su ID y obtener todos los clientes.
  * Las clases que implementen esta interfaz deben proporcionar la lógica específica para estas operaciones.
  *
- * @autor limon
+ * @author limon
  */
 public interface ICliente {
     

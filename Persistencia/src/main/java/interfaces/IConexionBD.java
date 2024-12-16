@@ -7,7 +7,7 @@ import java.sql.SQLException;
  * Interfaz que define los métodos para la conexión a la base de datos.
  * Contiene un método abstracto para crear una conexión a la base de datos.
  *
- * @autor eduar
+ * @author limon
  */
 public interface IConexionBD {
 

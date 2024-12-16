@@ -14,7 +14,7 @@ import javax.persistence.Table;
  * Esta clase es una entidad que mapea la tabla `tblRestaurante` en la base de datos.
  * Contiene la información sobre el horario de apertura y cierre del restaurante.
  * 
- * @autor limon
+ * @author limon
  */
 @Entity
 @Table(name = "tblRestaurante")

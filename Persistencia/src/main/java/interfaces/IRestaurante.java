@@ -14,7 +14,7 @@ import java.util.List;
  * Incluye métodos para guardar, eliminar, modificar, buscar un restaurante por su ID y obtener todos los restaurantes.
  * Las clases que implementen esta interfaz deben proporcionar la lógica específica para estas operaciones.
  *
- * @autor limon
+ * @author limon
  */
 public interface IRestaurante {
     

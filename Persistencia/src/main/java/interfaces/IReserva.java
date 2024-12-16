@@ -14,7 +14,7 @@ import java.util.List;
  * Incluye métodos para guardar, eliminar, modificar, buscar una reserva por su ID y obtener todas las reservas.
  * Las clases que implementen esta interfaz deben proporcionar la lógica específica para estas operaciones.
  *
- * @autor limon
+ * @author limon
  */
 public interface IReserva {
     

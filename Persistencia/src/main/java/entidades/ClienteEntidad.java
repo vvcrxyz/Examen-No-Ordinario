@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * Esta clase es una entidad que mapea la tabla `tblCliente` en la base de datos.
  * Contiene los detalles del cliente como el nombre completo, teléfono e ID.
  * 
- * @autor limon
+ * @author limon 
  */
 @Entity
 @Table(name = "tblCliente")
