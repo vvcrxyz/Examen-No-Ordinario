@@ -3,8 +3,6 @@ package entidades;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -15,13 +13,8 @@ import javax.persistence.Table;
 @Table(name = "tblMesa")
 public class MesaEntidad implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idMesa")
-    private Long id;
-
     @Column(name = "codigoMesa", length = 20, nullable = false, unique = true)
     private String codigoMesa; // Código único (ej. TER-2-001)
 
@@ -40,6 +33,12 @@ public class MesaEntidad implements Serializable {
     public MesaEntidad() {
     }
 
+    public MesaEntidad(String tipo, int capacidad, String ubicacion) {
+        this.tipo = tipo;
+        this.capacidad = capacidad;
+        this.ubicacion = ubicacion;
+    }
+    
     public MesaEntidad(String codigoMesa, String tipo, int capacidad, String ubicacion) {
         this.codigoMesa = codigoMesa;
         this.tipo = tipo;
@@ -47,14 +46,6 @@ public class MesaEntidad implements Serializable {
         this.ubicacion = ubicacion;
     }
 
-    // Getters y Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getCodigoMesa() {
         return codigoMesa;
@@ -90,6 +81,6 @@ public class MesaEntidad implements Serializable {
 
     @Override
     public String toString() {
-        return "MesaEntidad{" + "id=" + id + ", codigoMesa=" + codigoMesa + ", tipo=" + tipo + ", capacidad=" + capacidad + ", ubicacion=" + ubicacion + '}';
+        return "MesaEntidad{" +  ", codigoMesa=" + codigoMesa + ", tipo=" + tipo + ", capacidad=" + capacidad + ", ubicacion=" + ubicacion + '}';
     }
 }

@@ -39,6 +39,7 @@ public class FrmInsercionMasiva extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         btnGenerar = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        btnRegresar = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -48,7 +49,7 @@ public class FrmInsercionMasiva extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Al tocar el boton se generan ");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, -1, -1));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, -1, -1));
 
         btnGenerar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnGenerar.png"))); // NOI18N
         btnGenerar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -57,12 +58,21 @@ public class FrmInsercionMasiva extends javax.swing.JFrame {
                 btnGenerarMouseClicked(evt);
             }
         });
-        getContentPane().add(btnGenerar, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 200, -1, -1));
+        getContentPane().add(btnGenerar, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 170, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("20 clientes aleatoriamente");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, -1, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, -1, -1));
+
+        btnRegresar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnRegresar.png"))); // NOI18N
+        btnRegresar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRegresar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnRegresarMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnRegresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 230, -1, -1));
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BackgroundInsercion.png"))); // NOI18N
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -99,7 +109,17 @@ public class FrmInsercionMasiva extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Ocurrió un error al insertar clientes: " + e.getMessage());
             e.printStackTrace();
             }
+        FrmInicio frm = new FrmInicio();
+        frm.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnGenerarMouseClicked
+
+    private void btnRegresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegresarMouseClicked
+        // TODO add your handling code here:
+        FrmInicio frm = new FrmInicio();
+        frm.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnRegresarMouseClicked
     
     /**
      * @param args the command line arguments
@@ -138,6 +158,7 @@ public class FrmInsercionMasiva extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnGenerar;
+    private javax.swing.JLabel btnRegresar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -7,12 +7,13 @@ package Presentacion;
 import dto.MesaDTO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import logica.MesaNegocio;
-import utilerias.JButtonCellEditor;
-import utilerias.JButtonRenderer;
+
 
 /**
  *
@@ -21,7 +22,7 @@ import utilerias.JButtonRenderer;
 public class FrmGestionarMesa extends javax.swing.JFrame {
 
     MesaNegocio mesaNegocio = new MesaNegocio();
-
+    List<MesaDTO> listaMesas = mesaNegocio.buscarTodasMesas();
 
     /**
      * Creates new form FrmGestionarMesa
@@ -29,89 +30,39 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
     public FrmGestionarMesa() {
         initComponents();
         
-        botonEditarEnTabla();
-        botonEliminarEnTabla();
-    }
+    // Establece la lista de mesas al seleccionar la ubicación inicial
+    String ubicacionInicial = (String) comboBoxUbicacion.getSelectedItem();
+    listaMesas = mesaNegocio.buscarTodasMesas(); // Asegúrate de cargar todas las mesas desde el inicio
     
-    private void botonEliminarEnTabla() {
-
-        ActionListener onEliminarClickListener = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Obtén la fila seleccionada
-                int filaSeleccionada = tblMesa.getSelectedRow();
-
-                if (filaSeleccionada != -1) { 
-                    
-                    DefaultTableModel modeloTabla = (DefaultTableModel) tblMesa.getModel();
-
-                    String codigoMesa = (String) modeloTabla.getValueAt(filaSeleccionada, 0); 
-
-                    MesaDTO mesa = new MesaDTO();
-                    
-                    mesa.setCodigoMesa(codigoMesa);
-                    
-                    int respuesta = JOptionPane.showConfirmDialog(
-                            null,
-                            "¿Está seguro de que desea eliminar este alumno?",
-                            "Confirmar eliminación",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE
-                    );
-
-                    if (respuesta == JOptionPane.YES_OPTION) {
-                        try {
-                            mesaNegocio.eliminarMesa(mesa);
-                            JOptionPane.showMessageDialog(null, "La mesa se ha eliminado correctamente", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-                            dispose();
-                            FrmGestionarMesa frm = new FrmGestionarMesa();
-                            frm.setVisible(true);
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado al eliminar la mesa: " + ex, "ERROR", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-
-                }
-            }
-        };
-
-        TableColumnModel modeloColumnas = this.tblMesa.getColumnModel();
-        modeloColumnas.getColumn(2).setCellRenderer(new JButtonRenderer("Eliminar"));
-        modeloColumnas.getColumn(2).setCellEditor(new JButtonCellEditor("Eliminar", onEliminarClickListener));
-    }
-    
-    private void botonEditarEnTabla() {
-
-        ActionListener onEliminarClickListener = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Obtén la fila seleccionada
-                int filaSeleccionada = tblMesa.getSelectedRow();
-
-                if (filaSeleccionada != -1) { // Verifica que haya una fila seleccionada
-                    // Usa el modelo para obtener los datos del estudiante en esa fila
-                    DefaultTableModel modeloTabla = (DefaultTableModel) tblMesa.getModel();
-
-                    String codigoMesa = (String) modeloTabla.getValueAt(filaSeleccionada, 0);  
-                    
-                    MesaDTO mesa = new MesaDTO();
-                    
-                    mesa.setCodigoMesa(codigoMesa);
-
-                    // Aquí puedes implementar la lógica de eliminación o cualquier otra acción
-                    System.out.println("Mesa a eliminar: " + mesa.toString());
-                    FrmEditarMesa frmEAPU = new FrmEditarMesa(mesa);
-                    frmEAPU.setVisible(true);
-
-                }
-            }
-        };
-        TableColumnModel modeloColumnas = this.tblMesa.getColumnModel();
-        modeloColumnas.getColumn(1).setCellRenderer(new JButtonRenderer("Editar"));
-        modeloColumnas.getColumn(1).setCellEditor(new JButtonCellEditor("Editar", onEliminarClickListener));
+    // Filtra las mesas según la ubicación seleccionada por defecto
+    List<MesaDTO> mesasFiltradas = new ArrayList<>();
+    for (MesaDTO mesa : listaMesas) {
+        if (mesa.getUbicacion().equals(ubicacionInicial)) {
+            mesasFiltradas.add(mesa);
         }
+    }
+    
+    // Actualiza la tabla con las mesas filtradas
+    actualizarTabla(mesasFiltradas);
+    
+    
+    }
+    
+    private void actualizarTabla(List<MesaDTO> mesas) {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tblMesa.getModel();
+        // Limpia la tabla antes de agregar los nuevos datos
+        modeloTabla.setRowCount(0);
+
+        // Agrega las filas correspondientes a las mesas filtradas
+        for (MesaDTO mesa : mesas) {
+            modeloTabla.addRow(new Object[]{
+                mesa.getCodigoMesa(),
+                "Editar", // Aquí puedes manejar la acción de edición
+                "Eliminar" // Aquí puedes manejar la acción de eliminación
+            });
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -153,6 +104,11 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 180, -1, -1));
 
         comboBoxUbicacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Terraza", "General", "Ventana" }));
+        comboBoxUbicacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBoxUbicacionActionPerformed(evt);
+            }
+        });
         getContentPane().add(comboBoxUbicacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 180, 110, 30));
 
         btnInsertarMesa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnInsertarMesa.png"))); // NOI18N
@@ -207,6 +163,21 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
         frm.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnInsertarMesaMouseClicked
+
+    private void comboBoxUbicacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxUbicacionActionPerformed
+        String ubicacionSeleccionada = (String) comboBoxUbicacion.getSelectedItem();
+    
+        // Filtra las mesas por la ubicación seleccionada
+        List<MesaDTO> mesasFiltradas = new ArrayList<>();
+        for (MesaDTO mesa : listaMesas) {
+            if (mesa.getUbicacion().equals(ubicacionSeleccionada)) {
+                mesasFiltradas.add(mesa);
+            }
+        }
+
+        // Actualiza la tabla con las mesas filtradas
+        actualizarTabla(mesasFiltradas);
+    }//GEN-LAST:event_comboBoxUbicacionActionPerformed
 
     /**
      * @param args the command line arguments

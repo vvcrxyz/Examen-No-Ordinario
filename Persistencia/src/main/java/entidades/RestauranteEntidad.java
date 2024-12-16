@@ -7,14 +7,11 @@ package entidades;
 import java.io.Serializable;
 import java.sql.Time;
 import java.util.List;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 /**
@@ -36,8 +33,6 @@ public class RestauranteEntidad implements Serializable {
     @Column(name = "horaCierre", nullable = false)
     private Time horaCierre;
    
-    @ElementCollection
-    @CollectionTable(name = "restaurante_ubicaciones", joinColumns = @JoinColumn(name = "restaurante_id"))
     @Column(nullable = false)
     private List<String> ubicacion;
 

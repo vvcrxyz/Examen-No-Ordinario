@@ -5,12 +5,11 @@
 package logica;
 
 import dao.MesaDAO;
-import dto.ClienteDTO;
 import dto.MesaDTO;
-import entidades.ClienteEntidad;
 import entidades.MesaEntidad;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -75,4 +74,6 @@ public class MesaNegocio {
         }
         return mesas;
     }
+    
+    
 }
