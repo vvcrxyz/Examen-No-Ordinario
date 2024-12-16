@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import entidades.MesaEntidad;
@@ -14,8 +10,11 @@ import javax.persistence.TypedQuery;
 import javax.swing.JOptionPane;
 
 /**
+ * Clase que maneja las operaciones de persistencia de la entidad `MesaEntidad`.
+ * Proporciona métodos para guardar, eliminar, modificar, y buscar mesas en la base de datos.
+ * Utiliza JPA (Java Persistence API) para interactuar con la base de datos.
  *
- * @author limon
+ * @autor limon
  */
 public class MesaDAO {
     
@@ -24,12 +23,15 @@ public class MesaDAO {
     EntityManagerFactory managerFactory = null;
     EntityTransaction transaction = null;
 
-
+    // Constructor vacío
     public MesaDAO() {
-        // Constructor vacío
     }
 
-
+    /**
+     * Guarda una nueva mesa en la base de datos.
+     * 
+     * @param mesa la mesa que se desea guardar
+     */
     public void guardarMesa(MesaEntidad mesa) {
         try {
             // Construimos el EntityManager
@@ -58,7 +60,11 @@ public class MesaDAO {
         }
     }
 
-
+    /**
+     * Elimina una mesa de la base de datos.
+     * 
+     * @param mesa la mesa que se desea eliminar
+     */
     public void eliminarMesa(MesaEntidad mesa) {
         try {
             // Construimos el EntityManager
@@ -87,7 +93,11 @@ public class MesaDAO {
         }
     }
 
-
+    /**
+     * Modifica los datos de una mesa en la base de datos.
+     * 
+     * @param mesa la mesa con los datos actualizados
+     */
     public void modificarMesa(MesaEntidad mesa) {
         try {
             // Construimos el EntityManager
@@ -116,9 +126,13 @@ public class MesaDAO {
         }
     }
 
-
+    /**
+     * Busca una mesa en la base de datos por su ID.
+     * 
+     * @param id el ID de la mesa que se desea buscar
+     * @return la mesa con el ID proporcionado, o null si no se encuentra
+     */
     public MesaEntidad buscarUnaMesa(Long id) {
-
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
@@ -135,16 +149,17 @@ public class MesaDAO {
         } finally {
             if (entityManager != null) {
                 // Cerramos el EntityManager
-                System.out.println("cierras");
                 entityManager.close();
             }
         }
-
     }
 
-
+    /**
+     * Busca todas las mesas en la base de datos.
+     * 
+     * @return una lista de todas las mesas en la base de datos
+     */
     public List<MesaEntidad> buscarTodasMesas() {
-
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
@@ -153,7 +168,7 @@ public class MesaDAO {
             // Buscamos las entidades en la base de datos
             TypedQuery<MesaEntidad> query = entityManager.createQuery("SELECT a FROM MesaEntidad a", MesaEntidad.class);
 
-            // Regresamos la entidad
+            // Regresamos la lista de mesas
             return query.getResultList();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
@@ -165,5 +180,4 @@ public class MesaDAO {
             }
         }
     }
-    
 }

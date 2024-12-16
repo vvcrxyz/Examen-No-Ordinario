@@ -1,10 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
-import entidades.ClienteEntidad;
 import entidades.RestauranteEntidad;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -15,8 +10,11 @@ import javax.persistence.TypedQuery;
 import javax.swing.JOptionPane;
 
 /**
+ * Clase que maneja las operaciones de persistencia de la entidad `RestauranteEntidad`.
+ * Proporciona métodos para guardar, eliminar, modificar y buscar restaurantes en la base de datos.
+ * Utiliza JPA (Java Persistence API) para interactuar con la base de datos.
  *
- * @author limon
+ * @autor limon
  */
 public class RestauranteDAO {
     
@@ -25,12 +23,15 @@ public class RestauranteDAO {
     EntityManagerFactory managerFactory = null;
     EntityTransaction transaction = null;
 
-
+    // Constructor vacío
     public RestauranteDAO() {
-        // Constructor vacío
     }
 
-
+    /**
+     * Guarda un nuevo restaurante en la base de datos.
+     * 
+     * @param restaurante el restaurante que se desea guardar
+     */
     public void guardarRestaurante(RestauranteEntidad restaurante) {
         try {
             // Construimos el EntityManager
@@ -59,7 +60,11 @@ public class RestauranteDAO {
         }
     }
 
-
+    /**
+     * Elimina un restaurante de la base de datos.
+     * 
+     * @param restaurante el restaurante que se desea eliminar
+     */
     public void eliminarRestaurante(RestauranteEntidad restaurante) {
         try {
             // Construimos el EntityManager
@@ -88,7 +93,11 @@ public class RestauranteDAO {
         }
     }
 
-
+    /**
+     * Modifica los datos de un restaurante en la base de datos.
+     * 
+     * @param restaurante el restaurante con los datos actualizados
+     */
     public void modificarRestaurante(RestauranteEntidad restaurante) {
         try {
             // Construimos el EntityManager
@@ -117,9 +126,13 @@ public class RestauranteDAO {
         }
     }
 
-
+    /**
+     * Busca un restaurante en la base de datos por su ID.
+     * 
+     * @param id el ID del restaurante que se desea buscar
+     * @return el restaurante con el ID proporcionado, o null si no se encuentra
+     */
     public RestauranteEntidad buscarUnRestaurante(Long id) {
-
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
@@ -136,16 +149,17 @@ public class RestauranteDAO {
         } finally {
             if (entityManager != null) {
                 // Cerramos el EntityManager
-                System.out.println("cierras");
                 entityManager.close();
             }
         }
-
     }
 
-
+    /**
+     * Busca todos los restaurantes en la base de datos.
+     * 
+     * @return una lista de todos los restaurantes en la base de datos
+     */
     public List<RestauranteEntidad> buscarTodosRestaurantes() {
-
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
@@ -154,7 +168,7 @@ public class RestauranteDAO {
             // Buscamos las entidades en la base de datos
             TypedQuery<RestauranteEntidad> query = entityManager.createQuery("SELECT a FROM RestauranteEntidad a", RestauranteEntidad.class);
 
-            // Regresamos la entidad
+            // Regresamos la lista de restaurantes
             return query.getResultList();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
@@ -166,5 +180,4 @@ public class RestauranteDAO {
             }
         }
     }
-    
 }

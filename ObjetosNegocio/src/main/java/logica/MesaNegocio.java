@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package logica;
 
 import conexion.ConexionBD;
@@ -19,19 +15,29 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *
- * @author limon
+ * Lógica de negocio para gestionar mesas en el sistema de reservas.
+ * Esta clase maneja las operaciones relacionadas con las mesas,
+ * incluyendo la conversión entre objetos DTO y entidades, y la comunicación
+ * con la capa de acceso a datos a través de la clase MesaDAO.
  */
 public class MesaNegocio {
     
     private final MesaDAO mesaDAO;
 
-    // Constructor
+    /**
+     * Constructor de la clase MesaNegocio.
+     * Inicializa el objeto MesaDAO necesario para realizar las operaciones de base de datos.
+     */
     public MesaNegocio() {
         this.mesaDAO = new MesaDAO();
     }
 
-    // Conversión de ClienteDTO a ClienteEntidad
+    /**
+     * Convierte un objeto MesaDTO a un objeto MesaEntidad.
+     * 
+     * @param dto El objeto MesaDTO a convertir.
+     * @return El objeto MesaEntidad correspondiente.
+     */
     private MesaEntidad convertir(MesaDTO dto) {
         MesaEntidad entidad = new MesaEntidad();
         entidad.setCodigoMesa(dto.getCodigoMesa());
@@ -41,7 +47,12 @@ public class MesaNegocio {
         return entidad;
     }
 
-    // Conversión de ClienteEntidad a ClienteDTO
+    /**
+     * Convierte un objeto MesaEntidad a un objeto MesaDTO.
+     * 
+     * @param entidad El objeto MesaEntidad a convertir.
+     * @return El objeto MesaDTO correspondiente.
+     */
     private MesaDTO convertir(MesaEntidad entidad) {
         if (entidad == null) {
             return null;
@@ -49,28 +60,49 @@ public class MesaNegocio {
         return new MesaDTO(entidad);
     }
 
-    // Guardar un cliente
+    /**
+     * Guarda una mesa en la base de datos.
+     * 
+     * @param c El objeto MesaDTO que representa la mesa a guardar.
+     */
     public void guardarMesa(MesaDTO c) {
         mesaDAO.guardarMesa(convertir(c));
     }
 
-    // Modificar un cliente
+    /**
+     * Modifica una mesa en la base de datos.
+     * 
+     * @param c El objeto MesaDTO que representa la mesa a modificar.
+     */
     public void modificarMesa(MesaDTO c) {
         mesaDAO.modificarMesa(convertir(c));
     }
 
-    // Eliminar un cliente
+    /**
+     * Elimina una mesa de la base de datos.
+     * 
+     * @param c El objeto MesaDTO que representa la mesa a eliminar.
+     */
     public void eliminarMesa(MesaDTO c) {
         mesaDAO.eliminarMesa(convertir(c));
     }
 
-    // Buscar una mesa por ID
+    /**
+     * Busca una mesa por su ID en la base de datos.
+     * 
+     * @param id El ID de la mesa a buscar.
+     * @return Un objeto MesaDTO correspondiente a la mesa encontrada, o null si no se encuentra.
+     */
     public MesaDTO buscarCliente(Long id) {
         MesaEntidad entidad = mesaDAO.buscarUnaMesa(id);
         return convertir(entidad);
     }
 
-    // Buscar todos los clientes
+    /**
+     * Busca todas las mesas en la base de datos y las devuelve como una lista de objetos MesaDTO.
+     * 
+     * @return Una lista de objetos MesaDTO que representan todas las mesas encontradas.
+     */
     public List<MesaDTO> buscarTodasMesas() {
         List<MesaEntidad> entidades = mesaDAO.buscarTodasMesas();
         List<MesaDTO> mesas = new ArrayList<>();
@@ -81,6 +113,14 @@ public class MesaNegocio {
         return mesas;
     }
     
+    /**
+     * Busca una mesa disponible en función de la ubicación, número de personas y hora de reserva.
+     * 
+     * @param ubicacion La ubicación de la mesa.
+     * @param numPersonas El número de personas que requiere la mesa.
+     * @param fechaHora La fecha y hora en la que se desea realizar la reserva.
+     * @return Un objeto MesaDTO correspondiente a una mesa disponible, o null si no se encuentra ninguna mesa disponible.
+     */
     public MesaDTO buscarMesaDisponible(String ubicacion, int numPersonas, LocalDateTime fechaHora) {
         // Lista de mesas disponibles
         List<MesaDTO> mesasDisponibles = obtenerMesasPorUbicacionYCapacidad(ubicacion, numPersonas);
@@ -97,6 +137,13 @@ public class MesaNegocio {
         return null;
     }
     
+    /**
+     * Obtiene las mesas filtradas por ubicación y capacidad desde la base de datos.
+     * 
+     * @param ubicacion La ubicación de las mesas a buscar.
+     * @param numPersonas El número de personas que se espera en la mesa.
+     * @return Una lista de objetos MesaDTO que representan las mesas filtradas.
+     */
     private List<MesaDTO> obtenerMesasPorUbicacionYCapacidad(String ubicacion, int numPersonas) {
         // Consulta a la base de datos para obtener las mesas filtradas
         String query = "SELECT * FROM Mesas WHERE ubicacion = ? AND capacidad >= ?";
@@ -126,6 +173,13 @@ public class MesaNegocio {
         return mesas;
     }
     
+    /**
+     * Verifica si una mesa está disponible en una fecha y hora específicas.
+     * 
+     * @param mesa El objeto MesaDTO que representa la mesa a verificar.
+     * @param fechaHora La fecha y hora de la reserva que se desea comprobar.
+     * @return true si la mesa está disponible, false si ya tiene una reserva en ese horario.
+     */
     private boolean verificarDisponibilidadMesa(MesaDTO mesa, LocalDateTime fechaHora) {
         // Consulta a la base de datos para verificar si la mesa tiene reservas en conflicto
         String query = "SELECT COUNT(*) AS total FROM Reservas WHERE idMesa = ? AND fechaHoraReserva = ?";
@@ -151,6 +205,11 @@ public class MesaNegocio {
     
     private static final AtomicInteger contador = new AtomicInteger(0);
 
+    /**
+     * Genera un número único de tres dígitos para identificar las mesas.
+     * 
+     * @return Un número único de tres dígitos en formato de cadena.
+     */
     public static String obtenerNumeroUnico() {
         // Incrementa el contador y garantiza que esté dentro del rango de tres dígitos.
         int numero = contador.incrementAndGet();

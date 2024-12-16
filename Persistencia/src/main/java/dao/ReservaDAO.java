@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import entidades.ReservaEntidad;
@@ -14,22 +10,30 @@ import javax.persistence.TypedQuery;
 import javax.swing.JOptionPane;
 
 /**
- *
- * @author limon
+ * Esta clase maneja las operaciones de persistencia para la entidad ReservaEntidad
+ * en la base de datos utilizando JPA (Java Persistence API). Incluye métodos para
+ * guardar, eliminar, modificar, buscar una reserva por ID y obtener todas las reservas.
  */
 public class ReservaDAO {
     
     // Instancias para manejar el contexto de persistencia
-    EntityManager entityManager = null;
-    EntityManagerFactory managerFactory = null;
-    EntityTransaction transaction = null;
+    private EntityManager entityManager = null;
+    private EntityManagerFactory managerFactory = null;
+    private EntityTransaction transaction = null;
 
-
+    /**
+     * Constructor vacío de la clase ReservaDAO.
+     * Inicializa el contexto de persistencia al momento de usar los métodos.
+     */
     public ReservaDAO() {
         // Constructor vacío
     }
 
-
+    /**
+     * Guarda una reserva en la base de datos.
+     * 
+     * @param reserva La reserva que se va a guardar.
+     */
     public void guardarReserva(ReservaEntidad reserva) {
         try {
             // Construimos el EntityManager
@@ -41,11 +45,11 @@ public class ReservaDAO {
             // Persistimos la entidad en la base de datos
             entityManager.persist(reserva);
 
-            // Todo salió bien, se confirma la transacción
+            // Confirmamos la transacción si todo salió bien
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
-                // En caso de error, se hace rollback de la transacción
+                // Si ocurre un error, se hace rollback de la transacción
                 transaction.rollback();
                 JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
             }
@@ -58,7 +62,11 @@ public class ReservaDAO {
         }
     }
 
-
+    /**
+     * Elimina una reserva de la base de datos.
+     * 
+     * @param reserva La reserva que se va a eliminar.
+     */
     public void eliminarReserva(ReservaEntidad reserva) {
         try {
             // Construimos el EntityManager
@@ -70,11 +78,11 @@ public class ReservaDAO {
             // Eliminamos la entidad de la base de datos
             entityManager.remove(entityManager.contains(reserva) ? reserva : entityManager.merge(reserva));
 
-            // Todo salió bien, se confirma la transacción
+            // Confirmamos la transacción si todo salió bien
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
-                // En caso de error, se hace rollback de la transacción
+                // Si ocurre un error, se hace rollback de la transacción
                 transaction.rollback();
                 JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
             }
@@ -87,7 +95,11 @@ public class ReservaDAO {
         }
     }
 
-
+    /**
+     * Modifica una reserva en la base de datos.
+     * 
+     * @param reserva La reserva que se va a modificar.
+     */
     public void modificarReserva(ReservaEntidad reserva) {
         try {
             // Construimos el EntityManager
@@ -99,11 +111,11 @@ public class ReservaDAO {
             // Actualizamos la entidad en la base de datos
             entityManager.merge(reserva);
 
-            // Todo salió bien, se confirma la transacción
+            // Confirmamos la transacción si todo salió bien
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
-                // En caso de error, se hace rollback de la transacción
+                // Si ocurre un error, se hace rollback de la transacción
                 transaction.rollback();
                 JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
             }
@@ -116,9 +128,13 @@ public class ReservaDAO {
         }
     }
 
-
+    /**
+     * Busca una reserva en la base de datos por su ID.
+     * 
+     * @param id El ID de la reserva a buscar.
+     * @return La reserva encontrada, o null si no se encuentra.
+     */
     public ReservaEntidad buscarUnaReserva(Long id) {
-
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
@@ -127,7 +143,7 @@ public class ReservaDAO {
             // Buscamos la entidad en la base de datos
             ReservaEntidad reserva = entityManager.find(ReservaEntidad.class, id);
 
-            // Regresamos la entidad
+            // Regresamos la reserva encontrada
             return reserva;
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
@@ -135,25 +151,27 @@ public class ReservaDAO {
         } finally {
             if (entityManager != null) {
                 // Cerramos el EntityManager
-                System.out.println("cierras");
+                System.out.println("Cerrando el EntityManager");
                 entityManager.close();
             }
         }
-
     }
 
-
+    /**
+     * Busca todas las reservas en la base de datos.
+     * 
+     * @return Una lista con todas las reservas o null si ocurre un error.
+     */
     public List<ReservaEntidad> buscarTodasReservas() {
-
         try {
             // Construimos el EntityManager
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
             entityManager = managerFactory.createEntityManager();
 
-            // Buscamos las entidades en la base de datos
+            // Creamos la consulta para obtener todas las reservas
             TypedQuery<ReservaEntidad> query = entityManager.createQuery("SELECT a FROM ReservaEntidad a", ReservaEntidad.class);
 
-            // Regresamos la entidad
+            // Regresamos la lista de reservas encontradas
             return query.getResultList();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
@@ -165,5 +183,4 @@ public class ReservaDAO {
             }
         }
     }
-    
 }
