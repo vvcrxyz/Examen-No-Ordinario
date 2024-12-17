@@ -52,88 +52,113 @@ public class FrmConsultaArea extends javax.swing.JFrame {
     String reportFilePath = "Reporte Consulta Area.pdf";
 
     public void generarReporteArea(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        if (fechaInicio == null || fechaFin == null) {
-            JOptionPane.showMessageDialog(this, "Las fechas no pueden ser nulas.", "Error", JOptionPane.ERROR_MESSAGE);
+    if (fechaInicio == null || fechaFin == null) {
+        JOptionPane.showMessageDialog(this, "Las fechas no pueden ser nulas.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    String tipoMesaSeleccionado = comboBoxTipoMesa.getSelectedItem().toString();
+    int capacidadMinima = 0;
+    int capacidadMaxima = 0;
+
+    // Determinar el rango de capacidad de la mesa según la opción seleccionada
+    switch (tipoMesaSeleccionado) {
+        case "Pequeña":
+            capacidadMinima = 1;
+            capacidadMaxima = 2;
+            break;
+        case "Mediana":
+            capacidadMinima = 3;
+            capacidadMaxima = 4;
+            break;
+        case "Grande":
+            capacidadMinima = 5;
+            capacidadMaxima = Integer.MAX_VALUE;  // Sin límite superior
+            break;
+        default:
+            JOptionPane.showMessageDialog(this, "Tipo de mesa no válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+    }
+
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionJPA");
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        // JPQL corregido para incluir el filtro por fecha y número de personas
+        String jpql = "SELECT r FROM ReservaEntidad r " +
+                      "WHERE r.fechaHoraReserva BETWEEN :fechaInicio AND :fechaFin " +
+                      "AND r.numPersonas BETWEEN :capacidadMinima AND :capacidadMaxima";
+
+        TypedQuery<ReservaEntidad> query = em.createQuery(jpql, ReservaEntidad.class);
+        query.setParameter("fechaInicio", Timestamp.valueOf(fechaInicio));
+        query.setParameter("fechaFin", Timestamp.valueOf(fechaFin));
+        query.setParameter("capacidadMinima", capacidadMinima);
+        query.setParameter("capacidadMaxima", capacidadMaxima);
+
+        List<ReservaEntidad> reservas = query.getResultList();
+
+        if (reservas.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No se encontraron reservas con los filtros seleccionados.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionJPA");
-        EntityManager em = emf.createEntityManager();
+        // Generar PDF
+        PdfWriter writer = new PdfWriter(reportFilePath);
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc);
 
-        try {
-            // JPQL corregido
-            String jpql = "SELECT r FROM ReservaEntidad r " +
-                          "WHERE r.fechaHoraReserva BETWEEN :fechaInicio AND :fechaFin";
+        document.add(new Paragraph("Historial de Reservas por Área del Restaurante").setBold().setFontSize(18));
+        document.add(new Paragraph("Filtros Aplicados:\n" +
+                "Fecha Inicio: " + fechaInicio.toString() +
+                "\nFecha Fin: " + fechaFin.toString() +
+                "\nTipo de Mesa: " + tipoMesaSeleccionado));
 
-            TypedQuery<ReservaEntidad> query = em.createQuery(jpql, ReservaEntidad.class);
-            query.setParameter("fechaInicio", Timestamp.valueOf(fechaInicio));
-            query.setParameter("fechaFin", Timestamp.valueOf(fechaFin));
+        // Usar SimpleDateFormat para el formato de la fecha
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-            List<ReservaEntidad> reservas = query.getResultList();
+        document.add(new Paragraph("\nListado de Reservas:"));
+        for (ReservaEntidad reserva : reservas) {
+            // Convertir Calendar a Date
+            Calendar fechaReservaCalendar = reserva.getFechaHoraReserva();
+            java.util.Date fechaReserva = fechaReservaCalendar.getTime(); // Convertir Calendar a Date
 
-            if (reservas.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "No se encontraron reservas con los filtros seleccionados.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
+            // Formatear la fecha
+            String fechaFormateada = sdf.format(fechaReserva);
 
-            // Generar PDF
-            PdfWriter writer = new PdfWriter(reportFilePath);
-            PdfDocument pdfDoc = new PdfDocument(writer);
-            Document document = new Document(pdfDoc);
-
-            document.add(new Paragraph("Historial de Reservas por Área del Restaurante").setBold().setFontSize(18));
-            document.add(new Paragraph("Filtros Aplicados:\n" +
-                    "Fecha Inicio: " + fechaInicio.toString() +
-                    "\nFecha Fin: " + fechaFin.toString()));
-
-            // Usar SimpleDateFormat para el formato de la fecha
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-            document.add(new Paragraph("\nListado de Reservas:"));
-            for (ReservaEntidad reserva : reservas) {
-                // Convertir Calendar a Date
-                Calendar fechaReservaCalendar = reserva.getFechaHoraReserva();
-                java.util.Date fechaReserva = fechaReservaCalendar.getTime(); // Convertir Calendar a Date
-
-                // Convertir Date a java.sql.Date
-                java.sql.Date sqlDate = new java.sql.Date(fechaReserva.getTime());
-
-                // Formatear la fecha
-                String fechaFormateada = sdf.format(fechaReserva);
-
-                // Crear el texto para el reporte con la fecha formateada
-                String reservaInfo = String.format("ID: %d | Fecha y Hora: %s | Cliente: %s | Personas: %d | Costo: %.2f | Ubicacion: %s | Codigo Mesa: %s" ,
-                        reserva.getId(),
-                        fechaFormateada, // Usamos la fecha formateada aquí
-                        reserva.getNombreCompleto(),
-                        reserva.getNumPersonas(),
-                        reserva.getCostoReserva(),
-                        reserva.getUbicacion(),
-                        reserva.getCodigoMesa());
-                document.add(new Paragraph(reservaInfo));
-
-                // Aquí puedes usar sqlDate si es necesario para alguna operación posterior
-            }
-
-            document.close();
-            JOptionPane.showMessageDialog(this, "Reporte generado en: " + reportFilePath, "Reporte generado", JOptionPane.INFORMATION_MESSAGE);
-
-            // Abrir el PDF automáticamente
-            File file = new File(reportFilePath);
-            if (Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().open(file);
-            } else {
-                JOptionPane.showMessageDialog(this, "El archivo PDF está listo pero no se pudo abrir automáticamente.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al generar el reporte: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            em.close();
-            emf.close();
+            // Crear el texto para el reporte con la fecha formateada
+            String reservaInfo = String.format("ID: %d | Fecha y Hora: %s | Cliente: %s | Personas: %d | Costo: %.2f | Ubicacion: %s | Codigo Mesa: %s",
+                    reserva.getId(),
+                    fechaFormateada, // Usamos la fecha formateada aquí
+                    reserva.getNombreCompleto(),
+                    reserva.getNumPersonas(),
+                    reserva.getCostoReserva(),
+                    reserva.getUbicacion(),
+                    reserva.getCodigoMesa());
+            document.add(new Paragraph(reservaInfo));
         }
+
+        document.close();
+        JOptionPane.showMessageDialog(this, "Reporte generado en: " + reportFilePath, "Reporte generado", JOptionPane.INFORMATION_MESSAGE);
+
+        // Abrir el PDF automáticamente
+        File file = new File(reportFilePath);
+        if (Desktop.isDesktopSupported()) {
+            Desktop.getDesktop().open(file);
+        } else {
+            JOptionPane.showMessageDialog(this, "El archivo PDF está listo pero no se pudo abrir automáticamente.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error al generar el reporte: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        em.close();
+        emf.close();
     }
+}
+
+
+
 
 
     

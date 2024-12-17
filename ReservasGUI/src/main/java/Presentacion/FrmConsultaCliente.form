@@ -205,7 +205,7 @@
               <Table columnCount="3" rowCount="4">
                 <Column editable="false" title="Nombre Cliente" type="java.lang.Object"/>
                 <Column editable="false" title="Telefono" type="java.lang.Object"/>
-                <Column editable="true" title="Reserva" type="java.lang.Object"/>
+                <Column editable="true" title="Detalles" type="java.lang.Object"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

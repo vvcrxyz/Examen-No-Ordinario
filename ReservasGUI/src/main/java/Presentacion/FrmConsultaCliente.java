@@ -160,7 +160,7 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
                 {null, null, null}
             },
             new String [] {
-                "Nombre Cliente", "Telefono", "Reserva"
+                "Nombre Cliente", "Telefono", "Detalles"
             }
         ) {
             boolean[] canEdit = new boolean [] {
