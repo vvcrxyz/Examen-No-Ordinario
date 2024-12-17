@@ -60,7 +60,12 @@ public class ReservaNegocio {
         return entidad;
     }
 
- 
+    /**
+     * Convierte un objeto ReservaEntidad a un objeto ReservaDTO.
+     * 
+     * @param entidad El objeto ReservaEntidad que se va a convertir.
+     * @return El objeto ReservaDTO correspondiente.
+     */
     private ReservaDTO convertir(ReservaEntidad entidad) {
         if (entidad == null) {
             return null;
@@ -140,6 +145,14 @@ public class ReservaNegocio {
         return convertir(entidad);
     }
     
+    /**
+     * Busca reservas de un cliente dentro de un rango de fechas.
+     * 
+     * @param nombreCliente Nombre del cliente.
+     * @param fechaInicio Fecha de inicio del rango.
+     * @param fechaFin Fecha de fin del rango.
+     * @return Una lista de objetos ReservaDTO que representan las reservas filtradas.
+     */
     public List<ReservaDTO> buscarReservasPorClienteYFechas(String nombreCliente, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         // Obtener todas las reservas
         List<ReservaDTO> todasReservas = buscarTodasReservas();
@@ -161,12 +174,11 @@ public class ReservaNegocio {
         return reservasFiltradas;
     }
 
-    
     /**
-     * Método que retorna las reservas con una cliente especificado
+     * Busca todas las reservas asociadas a un cliente.
      * 
-     * @param cliente Cliente a buscar
-     * @return una lista de las reservas
+     * @param cliente El cliente cuyas reservas se van a buscar.
+     * @return Una lista de objetos ReservaDTO correspondientes a las reservas del cliente.
      */
     public List<ReservaDTO> buscarReservasPorCliente(ClienteDTO cliente)  {
         List<ReservaDTO> reservasEncontradas = new ArrayList<>();
@@ -206,18 +218,16 @@ public class ReservaNegocio {
     }
     
     /**
-     * Método que retorna las reservas con una mesa especificada
+     * Busca todas las reservas asociadas a una mesa.
      * 
-     * @param mesa Mesa a buscar
-     * @return una lista de las reservas
-     * @throws Exception Si ocurre un error en la lógica del negocio al 
-     *                          procesar la reserva.
+     * @param mesa La mesa cuyas reservas se van a buscar.
+     * @return Una lista de objetos ReservaDTO correspondientes a las reservas de la mesa.
+     * @throws Exception Si ocurre un error en la lógica del negocio al procesar la reserva.
      */
     public List<ReservaDTO> buscarReservasPorMesa(MesaDTO mesa) throws Exception {
         
         List<ReservaDTO> reservasEncontradas = new ArrayList<>();
         List<ReservaEntidad> reservasEntidad = new ArrayList<>();
-
 
         MesaEntidad mesaFiltro = new MesaEntidad();
         mesaFiltro.setCodigoMesa(mesa.getCodigoMesa());
@@ -238,16 +248,12 @@ public class ReservaNegocio {
             return null;
         
         for(ReservaEntidad reserva : reservasEntidad){
-        
             ReservaDTO reservaDTO = new ReservaDTO(reserva.getNombreCompleto(), reserva.getTelefono(), reserva.getFechaHoraReserva(), reserva.getUbicacion(), reserva.getNumPersonas(), reserva.getCostoReserva(), reserva.getCodigoMesa());
             reservasEncontradas.add(reservaDTO);
-            
         }
         
         return reservasEncontradas;
-        
     }
-
 
     /**
      * Busca todas las reservas en la base de datos y las devuelve como una lista de objetos ReservaDTO.
@@ -262,5 +268,4 @@ public class ReservaNegocio {
         }
         return reservas;
     }
-
 }

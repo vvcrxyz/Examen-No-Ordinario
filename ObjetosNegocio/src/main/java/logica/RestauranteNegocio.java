@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Lógica de negocio para gestionar restaurantes.
- * Esta clase se encarga de realizar las operaciones de negocio relacionadas con los restaurantes, 
+ * Esta clase se encarga de realizar las operaciones de negocio relacionadas con los restaurantes,
  * tales como la creación, modificación, eliminación y consulta de restaurantes.
  * Se comunica con la capa de acceso a datos (DAO) y con la capa de transferencia de datos (DTO).
  */
@@ -16,14 +16,17 @@ public class RestauranteNegocio {
 
     private final RestauranteDAO restauranteDAO;
 
-    // Constructor
+    /**
+     * Constructor de la clase RestauranteNegocio.
+     * Inicializa el acceso a datos (DAO) para gestionar los restaurantes.
+     */
     public RestauranteNegocio() {
         this.restauranteDAO = new RestauranteDAO();
     }
 
     /**
      * Convierte un objeto RestauranteDTO en un objeto RestauranteEntidad.
-     * 
+     *
      * @param dto El objeto RestauranteDTO a convertir.
      * @return El objeto RestauranteEntidad resultante de la conversión.
      */
@@ -37,7 +40,7 @@ public class RestauranteNegocio {
 
     /**
      * Convierte un objeto RestauranteEntidad en un objeto RestauranteDTO.
-     * 
+     *
      * @param entidad El objeto RestauranteEntidad a convertir.
      * @return El objeto RestauranteDTO resultante de la conversión.
      */
@@ -50,7 +53,7 @@ public class RestauranteNegocio {
 
     /**
      * Guarda un nuevo restaurante.
-     * 
+     *
      * @param restaurante El restaurante a guardar, representado como un RestauranteDTO.
      */
     public void guardarRestaurante(RestauranteDTO restaurante) {
@@ -59,7 +62,7 @@ public class RestauranteNegocio {
 
     /**
      * Modifica un restaurante existente.
-     * 
+     *
      * @param restaurante El restaurante a modificar, representado como un RestauranteDTO.
      */
     public void modificarRestaurante(RestauranteDTO restaurante) {
@@ -68,14 +71,18 @@ public class RestauranteNegocio {
 
     /**
      * Elimina un restaurante.
-     * 
+     *
      * @param restaurante El restaurante a eliminar, representado como un RestauranteDTO.
      */
     public void eliminarRestaurante(RestauranteDTO restaurante) {
         restauranteDAO.eliminarRestaurante(convertir(restaurante));
     }
     
-    // Método para obtener los datos del restaurante
+    /**
+     * Obtiene los datos del restaurante.
+     *
+     * @return Un objeto RestauranteEntidad con los datos del restaurante.
+     */
     public RestauranteEntidad obtenerRestaurante() {
         // Llamamos al método de la capa de acceso a datos (DAO) para obtener los datos
         return restauranteDAO.obtenerRestaurante();
@@ -83,7 +90,7 @@ public class RestauranteNegocio {
 
     /**
      * Busca un restaurante por su ID.
-     * 
+     *
      * @param id El ID del restaurante a buscar.
      * @return Un objeto RestauranteDTO que representa al restaurante encontrado.
      */
@@ -94,7 +101,7 @@ public class RestauranteNegocio {
 
     /**
      * Busca todos los restaurantes.
-     * 
+     *
      * @return Una lista de objetos RestauranteDTO que representan todos los restaurantes.
      */
     public List<RestauranteDTO> buscarTodosRestaurantes() {
@@ -108,22 +115,22 @@ public class RestauranteNegocio {
     }
     
     /**
-    * Guarda un nuevo restaurante si no existe, o actualiza el existente.
-    * 
-    * @param restaurante El restaurante a guardar o actualizar, representado como un RestauranteDTO.
-    */
-   public void guardarOActualizarRestaurante(RestauranteDTO restaurante) {
-       // Verificar si ya existe un restaurante en la base de datos
-       RestauranteEntidad existente = restauranteDAO.buscarRestauranteUnico();
+     * Guarda un nuevo restaurante si no existe, o actualiza el existente.
+     * 
+     * @param restaurante El restaurante a guardar o actualizar, representado como un RestauranteDTO.
+     */
+    public void guardarOActualizarRestaurante(RestauranteDTO restaurante) {
+        // Verificar si ya existe un restaurante en la base de datos
+        RestauranteEntidad existente = restauranteDAO.buscarRestauranteUnico();
 
-       if (existente != null) {
-           // Si existe, actualizar los datos
-           RestauranteEntidad entidad = convertir(restaurante);
-           entidad.setId(existente.getId()); // Asegurarse de conservar el ID existente
-           restauranteDAO.modificarRestaurante(entidad);
-       } else {
-           // Si no existe, guardar como nuevo
-           restauranteDAO.guardarRestaurante(convertir(restaurante));
-       }
-   }
+        if (existente != null) {
+            // Si existe, actualizar los datos
+            RestauranteEntidad entidad = convertir(restaurante);
+            entidad.setId(existente.getId()); // Asegurarse de conservar el ID existente
+            restauranteDAO.modificarRestaurante(entidad);
+        } else {
+            // Si no existe, guardar como nuevo
+            restauranteDAO.guardarRestaurante(convertir(restaurante));
+        }
+    }
 }

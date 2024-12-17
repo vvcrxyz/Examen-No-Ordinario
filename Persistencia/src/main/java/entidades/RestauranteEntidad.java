@@ -1,7 +1,6 @@
 package entidades;
 
 import java.io.Serializable;
-import java.sql.Time;
 import java.time.LocalTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,13 +22,16 @@ public class RestauranteEntidad implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // Identificador único del restaurante
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    // Hora de apertura del restaurante
     @Column(name = "horaApertura", nullable = false, columnDefinition = "TIME")
     private LocalTime horaApertura;
 
+    // Hora de cierre del restaurante
     @Column(name = "horaCierre", nullable = false, columnDefinition = "TIME")
     private LocalTime horaCierre;
 

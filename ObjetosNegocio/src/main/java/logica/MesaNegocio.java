@@ -73,9 +73,8 @@ public class MesaNegocio {
     /**
      * Modifica una mesa en la base de datos.
      * 
-     * @param mesaVieja
-     * @param mesaNueva
-     * 
+     * @param mesaVieja El objeto MesaDTO con los datos antiguos de la mesa.
+     * @param mesaNueva El objeto MesaDTO con los datos nuevos de la mesa.
      */
     public void modificarMesa(MesaDTO mesaVieja, MesaDTO mesaNueva){
         
@@ -89,16 +88,24 @@ public class MesaNegocio {
         }
     }
 
+    /**
+     * Elimina una mesa de la base de datos para modificarla.
+     * Primero elimina las reservas relacionadas y luego la mesa.
+     * 
+     * @param mesaDTO El objeto MesaDTO que representa la mesa a eliminar.
+     * @throws Exception Si ocurre un error al eliminar la mesa o las reservas asociadas.
+     */
     public void eliminarMesaParaModificar(MesaDTO mesaDTO) throws Exception{
         
         // Se convierte el DTO a entidad Mesa
-        
         ReservaNegocio reservaNegocio = new ReservaNegocio();
         
+        // Se buscan todas las reservas asociadas a la mesa
         List<ReservaDTO> reservasConEstaMesa = reservaNegocio.buscarReservasPorMesa(mesaDTO);
         
         System.out.println(reservasConEstaMesa.toString());
         
+        // Se eliminan las reservas relacionadas
         for(ReservaDTO reserva : reservasConEstaMesa)
             reservaNegocio.eliminarReserva(reserva);
         
@@ -116,7 +123,7 @@ public class MesaNegocio {
     /**
      * Elimina una mesa de la base de datos.
      * 
-     * @param mesa El objeto MesaDTO que representa la mesa a eliminar.
+     * @param mesa El objeto MesaEntidad que representa la mesa a eliminar.
      */
     public void eliminarMesa(MesaEntidad mesa) {
         String query = "DELETE FROM tblmesa WHERE codigoMesa = ?";
@@ -132,7 +139,6 @@ public class MesaNegocio {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Busca una mesa por su ID en la base de datos.
@@ -185,9 +191,10 @@ public class MesaNegocio {
     }
     
     /**
-     * Se buscan las mesas disponibles por ubicacion
-     * @param seccion El objeto mesaDTo con los datos necesarios para la busqueda
-     * @return una lista de mesa dto
+     * Se buscan las mesas disponibles por ubicación
+     * @param seccion El objeto MesaDTO con los datos necesarios para la búsqueda.
+     * @return Una lista de objetos MesaDTO con las mesas disponibles en la ubicación.
+     * @throws Exception Si ocurre un error al buscar las mesas.
      */
     public List<MesaDTO> buscarMesasPorUbicacion(MesaDTO seccion) throws Exception{
     
@@ -197,22 +204,21 @@ public class MesaNegocio {
         try {
             mesasEntidad = mesaDAO.buscarMesasPorUbicacion(seccion.getUbicacion());
         } catch (Exception ex) {
-            
+            // Captura el error
         }
         
+        // Convierte las entidades a DTO y las agrega a la lista
         for(MesaEntidad mesa : mesasEntidad){
-        
             MesaDTO mesaD = new MesaDTO(mesa.getCodigoMesa(), mesa.getTipo(), mesa.getCapacidad(), mesa.getUbicacion());
-            
             mesasDisponibles.add(mesaD);
-            
         }
         
-        if(mesasDisponibles.isEmpty())
+        // Si no se encuentran mesas disponibles, retorna null
+        if(mesasDisponibles.isEmpty()) {
             return null;
+        }
         
         return mesasDisponibles;
-        
     }
     
     /**

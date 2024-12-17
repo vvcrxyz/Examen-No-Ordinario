@@ -130,15 +130,14 @@ public class MesaDAO implements IMesa {
     }
     
     /**
-     * Busca las mesas por seccion.
+     * Busca las mesas por sección.
      * 
-     * @param ubicacion la seccion
-     * @return Una lista de objetos `Mesa` que cumplen con los criterios de disponibilidad. Si no se encuentran mesas
-     *         disponibles, se devuelve una lista vacía.
-     * @throws PersistenciaException
+     * @param ubicacion la sección (ubicación) de las mesas
+     * @return Una lista de objetos `MesaEntidad` que cumplen con los criterios de ubicación.
+     *         Si no se encuentran mesas disponibles, se devuelve una lista vacía.
+     * @throws Exception en caso de error durante la consulta
      */
-    public List<MesaEntidad> buscarMesasPorUbicacion(String ubicacion) throws Exception{
-    
+    public List<MesaEntidad> buscarMesasPorUbicacion(String ubicacion) throws Exception {
         EntityManager entityManager = null;
         List<MesaEntidad> mesasDisponibles = null;
 
@@ -147,28 +146,20 @@ public class MesaDAO implements IMesa {
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
             entityManager = managerFactory.createEntityManager();
 
-            String jpql = "SELECT m FROM tblMesa m " +
-                          "WHERE m.ubicacion = :ubicacion";
-            
-            
+            String jpql = "SELECT m FROM tblMesa m WHERE m.ubicacion = :ubicacion";
             TypedQuery<MesaEntidad> query = entityManager.createQuery(jpql, MesaEntidad.class);
             query.setParameter("ubicacion", ubicacion);
 
-
             mesasDisponibles = query.getResultList();
-
-
         } catch (Exception e) {
-
-            
+            e.printStackTrace(); // Manejo de errores
         } finally {
             if (entityManager != null) {
-                entityManager.close(); // Cierra el EntityManager.
+                entityManager.close(); // Cierra el EntityManager
             }
         }
-        
+
         return mesasDisponibles;
-        
     }
 
     /**
@@ -210,7 +201,7 @@ public class MesaDAO implements IMesa {
             managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
             entityManager = managerFactory.createEntityManager();
 
-            // Buscamos las entidades en la base de datos
+            // Creamos la consulta para obtener todas las mesas
             TypedQuery<MesaEntidad> query = entityManager.createQuery("SELECT a FROM MesaEntidad a", MesaEntidad.class);
 
             // Regresamos la lista de mesas

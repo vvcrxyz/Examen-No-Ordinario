@@ -9,6 +9,10 @@ import javax.persistence.Table;
 /**
  * Representa una mesa en el restaurante.
  * Esta clase mapea la entidad "Mesa" a la tabla "tblMesa" en la base de datos.
+ * 
+ * La clase se utiliza para representar las mesas disponibles en un restaurante,
+ * incluyendo su código único, tipo (pequeña, mediana, grande), capacidad máxima,
+ * y ubicación dentro del restaurante (terrazas, ventanas, área general).
  */
 @Entity
 @Table(name = "tblMesa")
@@ -43,12 +47,14 @@ public class MesaEntidad implements Serializable {
 
     /**
      * Constructor vacío para crear instancias sin parámetros.
+     * Este constructor es utilizado por el framework de persistencia (JPA).
      */
     public MesaEntidad() {
     }
 
     /**
      * Constructor con parámetros para inicializar una mesa sin código.
+     * Este constructor es útil cuando se desea crear una mesa sin asignar un código único.
      * 
      * @param tipo Tipo de mesa (Pequeña, Mediana, Grande).
      * @param capacidad Capacidad máxima de personas.
@@ -62,6 +68,8 @@ public class MesaEntidad implements Serializable {
 
     /**
      * Constructor con parámetros para inicializar una mesa con código único.
+     * Este constructor se utiliza cuando se necesita especificar todos los atributos de la mesa,
+     * incluyendo el código único.
      * 
      * @param codigoMesa Código único de la mesa (ejemplo: TER-2-001).
      * @param tipo Tipo de mesa.
@@ -78,7 +86,7 @@ public class MesaEntidad implements Serializable {
     /**
      * Obtiene el código único de la mesa.
      * 
-     * @return El código de la mesa.
+     * @return El código de la mesa (ejemplo: TER-2-001).
      */
     public String getCodigoMesa() {
         return codigoMesa;
@@ -105,7 +113,7 @@ public class MesaEntidad implements Serializable {
     /**
      * Establece el tipo de mesa.
      * 
-     * @param tipo Tipo de mesa a establecer.
+     * @param tipo Tipo de mesa a establecer (Pequeña, Mediana, Grande).
      */
     public void setTipo(String tipo) {
         this.tipo = tipo;
@@ -114,7 +122,7 @@ public class MesaEntidad implements Serializable {
     /**
      * Obtiene la capacidad máxima de la mesa.
      * 
-     * @return La capacidad máxima de personas.
+     * @return La capacidad máxima de personas que pueden sentarse en la mesa.
      */
     public int getCapacidad() {
         return capacidad;
@@ -123,7 +131,7 @@ public class MesaEntidad implements Serializable {
     /**
      * Establece la capacidad máxima de la mesa.
      * 
-     * @param capacidad Capacidad de personas a establecer.
+     * @param capacidad Número máximo de personas a establecer.
      */
     public void setCapacidad(int capacidad) {
         this.capacidad = capacidad;
@@ -132,7 +140,7 @@ public class MesaEntidad implements Serializable {
     /**
      * Obtiene la ubicación de la mesa dentro del restaurante.
      * 
-     * @return La ubicación de la mesa (Terraza, Ventana, General).
+     * @return La ubicación de la mesa (por ejemplo: Terraza, Ventana, General).
      */
     public String getUbicacion() {
         return ubicacion;
@@ -141,7 +149,7 @@ public class MesaEntidad implements Serializable {
     /**
      * Establece la ubicación de la mesa dentro del restaurante.
      * 
-     * @param ubicacion Ubicación de la mesa a establecer.
+     * @param ubicacion Ubicación de la mesa a establecer (por ejemplo: Terraza, Ventana, General).
      */
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
@@ -150,10 +158,10 @@ public class MesaEntidad implements Serializable {
     /**
      * Representa la mesa como una cadena de texto.
      * 
-     * @return Una cadena con los detalles de la mesa.
+     * @return Una cadena con los detalles de la mesa, incluyendo el código, tipo, capacidad y ubicación.
      */
     @Override
     public String toString() {
-        return "MesaEntidad{" + ", codigoMesa=" + codigoMesa + ", tipo=" + tipo + ", capacidad=" + capacidad + ", ubicacion=" + ubicacion + '}';
+        return "MesaEntidad{" + "codigoMesa='" + codigoMesa + '\'' + ", tipo='" + tipo + '\'' + ", capacidad=" + capacidad + ", ubicacion='" + ubicacion + '\'' + '}';
     }
 }

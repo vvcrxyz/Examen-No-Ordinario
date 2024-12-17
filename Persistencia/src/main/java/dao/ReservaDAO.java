@@ -155,13 +155,12 @@ public class ReservaDAO implements IReserva{
     }
     
     /**
-     * Busca todas las reservas por mesa
+     * Busca todas las reservas por mesa.
      * 
-     * @param mesa la mesa en cuesttión
-     * @return Una lista con todas las reservas con ese mesa
-     * @throws PersistenciaException Si ocurre un error al realizar la consulta.
+     * @param mesa La mesa para la cual se buscan las reservas.
+     * @return Una lista con todas las reservas con esa mesa.
+     * @throws Exception Si ocurre un error al realizar la consulta.
      */
-  
     public List<ReservaEntidad> buscarReservaPorMesa(MesaEntidad mesa) throws Exception {
 
         EntityManager entityManager = null;
@@ -171,11 +170,9 @@ public class ReservaDAO implements IReserva{
         try {
             entityManager = createEntityManager();
 
-            String jpql = "SELECT r FROM Reserva r " +
-                          "WHERE r.mesa = :codigo";
+            String jpql = "SELECT r FROM Reserva r WHERE r.mesa = :codigo";
             
             TypedQuery<ReservaEntidad> query = entityManager.createQuery(jpql, ReservaEntidad.class);
-
             query.setParameter("codigo", mesa);
 
             listaReservas = query.getResultList();
@@ -191,11 +188,7 @@ public class ReservaDAO implements IReserva{
             }
         }
         
-        if(listaReservas == null || listaReservas.isEmpty())
-            return null;
-        
-        return listaReservas;
-        
+        return listaReservas.isEmpty() ? null : listaReservas;
     }
 
     /**

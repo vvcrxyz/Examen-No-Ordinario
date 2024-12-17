@@ -21,18 +21,33 @@ public class ClienteEntidad implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * El identificador único del cliente. 
+     * Se genera automáticamente con la estrategia de incremento de la base de datos.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idCliente")
     private Long id;
 
+    /**
+     * El nombre completo del cliente.
+     * Este campo es obligatorio y tiene un máximo de 100 caracteres.
+     */
     @Column(name = "nombreCompleto", length = 100, nullable = false)
     private String nombreCompleto;
 
+    /**
+     * El número de teléfono del cliente.
+     * Este campo es obligatorio.
+     */
     @Column(name = "telefono", nullable = false)
     private String telefono;
 
-    // Constructor por defecto
+    /**
+     * Constructor por defecto para la clase `ClienteEntidad`.
+     * Este constructor es utilizado por JPA para la creación de instancias sin parámetros.
+     */
     public ClienteEntidad() {
     }
 
@@ -119,7 +134,7 @@ public class ClienteEntidad implements Serializable {
     /**
      * Método toString para representar la entidad `ClienteEntidad` en formato String.
      * 
-     * @return una representación en String de la entidad
+     * @return una representación en String de la entidad, que incluye el ID, nombre y teléfono del cliente
      */
     @Override
     public String toString() {

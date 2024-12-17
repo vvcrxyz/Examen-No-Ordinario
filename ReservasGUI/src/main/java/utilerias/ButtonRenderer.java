@@ -1,4 +1,4 @@
-package Util;
+package utilerias;
 
 import java.awt.Color;
 import java.awt.Component;

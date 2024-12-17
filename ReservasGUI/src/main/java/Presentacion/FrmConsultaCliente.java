@@ -5,15 +5,28 @@
 package Presentacion;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
 import dto.ClienteDTO;
 import dto.ReservaDTO;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import logica.ClienteNegocio;
 import logica.Encriptado;
 import logica.ReservaNegocio;
+import utilerias.ButtonEditor;
+import utilerias.ButtonRenderer;
+
+
 
 /**
  *
@@ -68,7 +81,65 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
         });
     }
     
-  
+    private void generarPDF(ReservaDTO reserva) {
+    try {
+        // Crear un nombre único para el archivo PDF usando el id de la reserva
+        String reportFilePath = "DetallesReserva_" + reserva.getId() + ".pdf";
+        
+        // Crear PdfWriter y PdfDocument
+        PdfWriter writer = new PdfWriter(reportFilePath);
+        PdfDocument pdfDoc = new PdfDocument(writer);
+
+        // Crear un Document (iText 7) para agregar contenido al PDF
+        com.itextpdf.layout.Document document = new com.itextpdf.layout.Document(pdfDoc);
+
+        // Usar SimpleDateFormat para el formato de la fecha
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+        // Convertir Calendar a Date
+        Calendar fechaReservaCalendar = reserva.getFechaHoraReserva(); // Aquí obtienes el objeto Calendar
+        java.util.Date fechaReserva = fechaReservaCalendar.getTime(); // Convertir Calendar a Date
+
+        // Formatear la fecha
+        String fechaFormateada = sdf.format(fechaReserva);
+
+        // Crear el texto para el reporte con la fecha formateada
+        String reservaInfo = String.format("ID: %d | Fecha y Hora: %s | Cliente: %s | Personas: %d | Costo: %.2f | Ubicacion: %s | Codigo Mesa: %s",
+                reserva.getId(),
+                fechaFormateada, // Usamos la fecha formateada aquí
+                reserva.getNombreCompleto(),
+                reserva.getNumPersonas(),
+                reserva.getCostoReserva(),
+                reserva.getUbicacion(),
+                reserva.getCodigoMesa());
+
+        // Añadir la información al documento PDF
+        document.add(new com.itextpdf.layout.element.Paragraph("Detalles de la Reserva"));
+        document.add(new com.itextpdf.layout.element.Paragraph(reservaInfo));
+
+        // Cerrar el documento
+        document.close();
+
+        // Mostrar mensaje de éxito
+        JOptionPane.showMessageDialog(null, "PDF generado con éxito.");
+
+        // Abrir el PDF automáticamente
+        File file = new File(reportFilePath);
+        if (Desktop.isDesktopSupported()) {
+            Desktop.getDesktop().open(file);
+        } else {
+            JOptionPane.showMessageDialog(this, "El archivo PDF está listo pero no se pudo abrir automáticamente.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error al generar el PDF: " + e.getMessage());
+    }
+}
+
+
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -190,32 +261,51 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegresarMouseClicked
 
     private void btnMostrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMostrarMouseClicked
-          // Obtener el nombre completo del cliente seleccionado
-        String nombreCliente = (String) comboBoxNombreCompleto.getSelectedItem();
+// Obtener el nombre completo del cliente seleccionado
+    String nombreCliente = (String) comboBoxNombreCompleto.getSelectedItem();
 
-        // Obtener las fechas de reserva seleccionadas
-        LocalDateTime fechaInicio = dateTimePicker.getDateTimePermissive();
-        LocalDateTime fechaFin = dateTimePicker2.getDateTimePermissive();
+    // Obtener las fechas de reserva seleccionadas
+    LocalDateTime fechaInicio = dateTimePicker.getDateTimePermissive();
+    LocalDateTime fechaFin = dateTimePicker2.getDateTimePermissive();
 
-        if (nombreCliente != null && fechaInicio != null && fechaFin != null) {
-            // Llamar al negocio para obtener las reservas filtradas
-            List<ReservaDTO> reservasFiltradas = reservaNegocio.buscarReservasPorClienteYFechas(nombreCliente, fechaInicio, fechaFin);
+    if (nombreCliente != null && fechaInicio != null && fechaFin != null) {
+        // Llamar al negocio para obtener las reservas filtradas
+        List<ReservaDTO> reservasFiltradas = reservaNegocio.buscarReservasPorClienteYFechas(nombreCliente, fechaInicio, fechaFin);
 
-            // Llenar la tabla con las reservas filtradas
-            DefaultTableModel model = (DefaultTableModel) tblCliente.getModel();
-            model.setRowCount(0);  // Limpiar la tabla
+        // Llenar la tabla con las reservas filtradas
+        DefaultTableModel model = (DefaultTableModel) tblCliente.getModel();
+        model.setRowCount(0);  // Limpiar la tabla
 
-            for (ReservaDTO reserva : reservasFiltradas) {
-                // Agregar cada reserva como una fila en la tabla
-                model.addRow(new Object[]{
-                    reserva.getNombreCompleto(),
-                    reserva.getTelefono(),
-                    
-                });
+        // Crear un ActionListener para el botón
+        ActionListener actionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtener la fila seleccionada (convertir el comando a número de fila)
+                int row = Integer.parseInt(e.getActionCommand());
+                ReservaDTO reservaSeleccionada = reservasFiltradas.get(row);
+
+                // Llamar al método para generar el PDF con los detalles de la reserva
+                generarPDF(reservaSeleccionada);
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos de búsqueda.");
+        };
+
+        // Agregar cada reserva como una fila en la tabla
+        for (int i = 0; i < reservasFiltradas.size(); i++) {
+            ReservaDTO reserva = reservasFiltradas.get(i);
+            model.addRow(new Object[] {
+                reserva.getNombreCompleto(),
+                reserva.getTelefono(),
+                "Ver Detalles"  // Esto será el texto del botón
+            });
+
+            // Asignar el ActionListener al botón de la columna "Detalles"
+            ButtonEditor buttonEditor = new ButtonEditor("Ver Detalles", actionListener);
+            tblCliente.getColumnModel().getColumn(2).setCellEditor(buttonEditor);
+            tblCliente.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer("Ver Detalles", Color.GREEN));
         }
+    } else {
+        JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos de búsqueda.");
+    }
     }//GEN-LAST:event_btnMostrarMouseClicked
 
     private void campoTextoTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTextoTelefonoActionPerformed
@@ -223,40 +313,7 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
 
     }//GEN-LAST:event_campoTextoTelefonoActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmConsultaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmConsultaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmConsultaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmConsultaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmConsultaCliente().setVisible(true);
-            }
-        });
-    }
+ 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnMostrar;
