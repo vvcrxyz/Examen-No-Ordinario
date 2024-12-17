@@ -19,6 +19,11 @@ import javax.persistence.TypedQuery;
 import javax.swing.JOptionPane;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
+import java.awt.Desktop;
+import java.io.File;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 
 
@@ -47,82 +52,91 @@ public class FrmConsultaArea extends javax.swing.JFrame {
     String reportFilePath = "Reporte Consulta Area.pdf";
 
     public void generarReporteArea(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        
-        // Verificar que las fechas no sean nulas
-    if (fechaInicio == null || fechaFin == null) {
-        JOptionPane.showMessageDialog(this, "Las fechas no pueden ser nulas.", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    // Crear EntityManager
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionJPA");
-    EntityManager em = emf.createEntityManager();
-
-    try {
-        // Consulta JPQL con filtros
-        String jpql = "SELECT r FROM ReservaEntidad r WHERE r.fechaHoraReserva BETWEEN :fechaInicio AND :fechaFin ";
-
-        TypedQuery<ReservaEntidad> query = em.createQuery(jpql, ReservaEntidad.class);
-        query.setParameter("fechaInicio", Timestamp.valueOf(fechaInicio));
-        query.setParameter("fechaFin", Timestamp.valueOf(fechaFin));
-        
-      
-
-        // Obtener resultados
-        List<ReservaEntidad> reservas = query.getResultList();
-
-        // Verificar si hay resultados
-        if (reservas.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No se encontraron reservas con los filtros seleccionados.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+        if (fechaInicio == null || fechaFin == null) {
+            JOptionPane.showMessageDialog(this, "Las fechas no pueden ser nulas.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Crear archivo PDF
-        PdfWriter writer = new PdfWriter(reportFilePath);
-        PdfDocument pdfDoc = new PdfDocument(writer);
-        Document document = new Document(pdfDoc);
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionJPA");
+        EntityManager em = emf.createEntityManager();
 
-        // Título del reporte
-        document.add(new Paragraph("Historial de Reservas por Área del Restaurante")
-                .setBold()
-                .setFontSize(18));
-        document.add(new Paragraph("Filtros Aplicados:")
-                .setFontSize(12)
-                .setItalic());
-        document.add(new Paragraph("Fecha Inicio: " + fechaInicio.toString() +
-                                   "\nFecha Fin: " + fechaFin.toString()));
+        try {
+            // JPQL corregido
+            String jpql = "SELECT r FROM ReservaEntidad r " +
+                          "WHERE r.fechaHoraReserva BETWEEN :fechaInicio AND :fechaFin";
 
-        // Encabezado de la tabla
-        document.add(new Paragraph("\nListado de Reservas:\n"));
+            TypedQuery<ReservaEntidad> query = em.createQuery(jpql, ReservaEntidad.class);
+            query.setParameter("fechaInicio", Timestamp.valueOf(fechaInicio));
+            query.setParameter("fechaFin", Timestamp.valueOf(fechaFin));
 
-        for (ReservaEntidad reserva : reservas) {
-            String reservaInfo = String.format("ID: %d | Fecha y Hora: %s | Cliente: %s | Mesa: %s | Personas: %d | Costo: %.2f",
-                    reserva.getId(),
-                    reserva.getFechaHoraReserva(),
-                    reserva.getNombreCompleto(),
-                    reserva.getCodigoMesa(),
-                    reserva.getNumPersonas(),
-                    reserva.getCostoReserva());
-            document.add(new Paragraph(reservaInfo));
+            List<ReservaEntidad> reservas = query.getResultList();
+
+            if (reservas.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No se encontraron reservas con los filtros seleccionados.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Generar PDF
+            PdfWriter writer = new PdfWriter(reportFilePath);
+            PdfDocument pdfDoc = new PdfDocument(writer);
+            Document document = new Document(pdfDoc);
+
+            document.add(new Paragraph("Historial de Reservas por Área del Restaurante").setBold().setFontSize(18));
+            document.add(new Paragraph("Filtros Aplicados:\n" +
+                    "Fecha Inicio: " + fechaInicio.toString() +
+                    "\nFecha Fin: " + fechaFin.toString()));
+
+            // Usar SimpleDateFormat para el formato de la fecha
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+            document.add(new Paragraph("\nListado de Reservas:"));
+            for (ReservaEntidad reserva : reservas) {
+                // Convertir Calendar a Date
+                Calendar fechaReservaCalendar = reserva.getFechaHoraReserva();
+                java.util.Date fechaReserva = fechaReservaCalendar.getTime(); // Convertir Calendar a Date
+
+                // Convertir Date a java.sql.Date
+                java.sql.Date sqlDate = new java.sql.Date(fechaReserva.getTime());
+
+                // Formatear la fecha
+                String fechaFormateada = sdf.format(fechaReserva);
+
+                // Crear el texto para el reporte con la fecha formateada
+                String reservaInfo = String.format("ID: %d | Fecha y Hora: %s | Cliente: %s | Personas: %d | Costo: %.2f | Ubicacion: %s | Codigo Mesa: %s" ,
+                        reserva.getId(),
+                        fechaFormateada, // Usamos la fecha formateada aquí
+                        reserva.getNombreCompleto(),
+                        reserva.getNumPersonas(),
+                        reserva.getCostoReserva(),
+                        reserva.getUbicacion(),
+                        reserva.getCodigoMesa());
+                document.add(new Paragraph(reservaInfo));
+
+                // Aquí puedes usar sqlDate si es necesario para alguna operación posterior
+            }
+
+            document.close();
+            JOptionPane.showMessageDialog(this, "Reporte generado en: " + reportFilePath, "Reporte generado", JOptionPane.INFORMATION_MESSAGE);
+
+            // Abrir el PDF automáticamente
+            File file = new File(reportFilePath);
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(file);
+            } else {
+                JOptionPane.showMessageDialog(this, "El archivo PDF está listo pero no se pudo abrir automáticamente.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al generar el reporte: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            em.close();
+            emf.close();
         }
-
-        // Cerrar documento
-        document.close();
-        JOptionPane.showMessageDialog(this, "Reporte generado exitosamente en: " + reportFilePath, "Reporte generado", JOptionPane.INFORMATION_MESSAGE);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al generar el reporte: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    } finally {
-        em.close();
-        emf.close();
-    }
-        
     }
 
 
     
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
