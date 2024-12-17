@@ -1,6 +1,7 @@
 package dao;
 
 import entidades.MesaEntidad;
+import interfaces.IMesa;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -16,7 +17,7 @@ import javax.swing.JOptionPane;
  *
  * @author limon limon
  */
-public class MesaDAO {
+public class MesaDAO implements IMesa {
     
     // Instancias para manejar el contexto de persistencia
     EntityManager entityManager = null;
@@ -32,6 +33,7 @@ public class MesaDAO {
      * 
      * @param mesa la mesa que se desea guardar
      */
+    @Override
     public void guardarMesa(MesaEntidad mesa) {
         try {
             // Construimos el EntityManager
@@ -51,7 +53,7 @@ public class MesaDAO {
                 transaction.rollback();
                 JOptionPane.showMessageDialog(null, "Error en Persistencia = " + e.getMessage());
             }
-            e.printStackTrace(); // Imprime la traza del error en la consola
+            // Imprime la traza del error en la consola
         } finally {
             if (entityManager != null) {
                 // Cerramos el EntityManager
@@ -65,6 +67,7 @@ public class MesaDAO {
      * 
      * @param mesa la mesa que se desea eliminar
      */
+    @Override
     public void eliminarMesa(MesaEntidad mesa) {
         try {
             // Construimos el EntityManager
@@ -124,6 +127,48 @@ public class MesaDAO {
                 entityManager.close();
             }
         }
+    }
+    
+    /**
+     * Busca las mesas por seccion.
+     * 
+     * @param ubicacion la seccion
+     * @return Una lista de objetos `Mesa` que cumplen con los criterios de disponibilidad. Si no se encuentran mesas
+     *         disponibles, se devuelve una lista vacía.
+     * @throws PersistenciaException
+     */
+    public List<MesaEntidad> buscarMesasPorUbicacion(String ubicacion) throws Exception{
+    
+        EntityManager entityManager = null;
+        List<MesaEntidad> mesasDisponibles = null;
+
+        try {
+            // Construimos el EntityManager
+            managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
+            entityManager = managerFactory.createEntityManager();
+
+            String jpql = "SELECT m FROM tblMesa m " +
+                          "WHERE m.ubicacion = :ubicacion";
+            
+            
+            TypedQuery<MesaEntidad> query = entityManager.createQuery(jpql, MesaEntidad.class);
+            query.setParameter("ubicacion", ubicacion);
+
+
+            mesasDisponibles = query.getResultList();
+
+
+        } catch (Exception e) {
+
+            
+        } finally {
+            if (entityManager != null) {
+                entityManager.close(); // Cierra el EntityManager.
+            }
+        }
+        
+        return mesasDisponibles;
+        
     }
 
     /**

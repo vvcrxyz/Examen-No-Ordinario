@@ -1,6 +1,12 @@
 package dao;
 
 import entidades.RestauranteEntidad;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -125,7 +131,54 @@ public class RestauranteDAO {
             }
         }
     }
+    
+    public RestauranteEntidad obtenerRestaurante() {
+        RestauranteEntidad restaurante = null;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+       try {
+            // Construimos el EntityManager
+            managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
+            
+            // Consulta SQL para obtener los datos del restaurante
+            String query = "SELECT hora_apertura, hora_cierre FROM restaurante LIMIT 1";  // Ejemplo de consulta
+            stmt = conn.prepareStatement(query);
+            
+            rs = stmt.executeQuery();
+            
+            // Si la consulta devuelve resultados, los procesamos
+            if (rs.next()) {
+                // Recuperamos las horas de apertura y cierre del restaurante
+                Time horaAperturaSQL = rs.getTime("hora_apertura");
+                Time horaCierreSQL = rs.getTime("hora_cierre");
+                
+                // Convertimos de Time a LocalTime
+                LocalTime horaApertura = horaAperturaSQL.toLocalTime();
+                LocalTime horaCierre = horaCierreSQL.toLocalTime();
+                
+                // Creamos el objeto RestauranteDTO con los datos obtenidos
+                restaurante = new RestauranteEntidad(horaApertura, horaCierre);
+            }
+        } catch (SQLException e) {
+            // Manejo de excepciones
+            e.printStackTrace();
+        } finally {
+            // Cerrar los recursos para evitar filtraciones de memoria
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return restaurante; // Retornamos el objeto RestauranteDTO con los datos
+    }
 
+    
     /**
      * Busca un restaurante en la base de datos por su ID.
      * 
@@ -180,4 +233,37 @@ public class RestauranteDAO {
             }
         }
     }
+    
+    /**
+    * Busca el único restaurante existente en la base de datos.
+    * 
+    * @return La entidad del restaurante si existe, o null si no hay ningún registro.
+    */
+   public RestauranteEntidad buscarRestauranteUnico() {
+       RestauranteEntidad restaurante = null;
+       try {
+           // Configurar el EntityManager
+           managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
+           entityManager = managerFactory.createEntityManager();
+
+           // Realizamos una consulta para obtener un único restaurante
+           TypedQuery<RestauranteEntidad> query = entityManager.createQuery(
+               "SELECT r FROM RestauranteEntidad r", RestauranteEntidad.class);
+           query.setMaxResults(1); // Solo queremos un registro
+
+           // Obtener el resultado
+           List<RestauranteEntidad> resultados = query.getResultList();
+           if (!resultados.isEmpty()) {
+               restaurante = resultados.get(0); // Retorna el primer resultado
+           }
+       } catch (Exception e) {
+           JOptionPane.showMessageDialog(null, "Error al buscar restaurante: " + e.getMessage());
+           e.printStackTrace();
+       } finally {
+           if (entityManager != null) {
+               entityManager.close();
+           }
+       }
+       return restaurante;
+   }
 }

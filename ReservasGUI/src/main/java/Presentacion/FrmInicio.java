@@ -4,16 +4,26 @@
  */
 package Presentacion;
 
+import dto.ClienteDTO;
+import java.util.Random;
+import javax.swing.JOptionPane;
+import logica.ClienteNegocio;
+import logica.Encriptado;
+
 /**
  *
  * @author limon
  */
 public class FrmInicio extends javax.swing.JFrame {
 
+    private ClienteNegocio clienteNegocio;
+    
     /**
      * Creates new form FrmInicio
      */
     public FrmInicio() {
+        clienteNegocio = new ClienteNegocio();
+        
         initComponents();
     }
 
@@ -117,9 +127,35 @@ public class FrmInicio extends javax.swing.JFrame {
 
     private void btnInsercionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInsercionMouseClicked
         // TODO add your handling code here:
-        FrmInsercionMasiva frm = new FrmInsercionMasiva();
-        frm.setVisible(true);
-        this.dispose();
+        Random random = new Random();
+    String[] nombres = {"Nomar", "Alberto", "Bryan", "Nicole", "Ramon", "Melania", "Emigdia", "Luis", "Mario", "Omar"};
+    String[] apellidos = {"Iribe", "Limon", "Quintero", "Corral", "Pérez", "Rascon", "Ortiz", "Mendoza", "Sanchez", "Navarro"};
+
+    try {
+        String secretKey = "1234567890123456";  // Clave secreta (debe ser de 16 caracteres para AES-128)
+
+        for (int i = 0; i < 20; i++) {
+            // Generar nombre completo aleatorio
+            String nombreCompleto = nombres[random.nextInt(nombres.length)] + " " + apellidos[random.nextInt(apellidos.length)];
+
+            // Generar teléfono aleatorio con el formato "644-XXXXXXX"
+            String telefono = "644-" + String.format("%07d", random.nextInt(10000000)); // Asegura 7 dígitos
+
+            // Encriptar el número de teléfono
+            String telefonoEncriptado = Encriptado.encrypt(telefono, secretKey);
+
+            // Crear el ClienteDTO
+            ClienteDTO cliente = new ClienteDTO(nombreCompleto, telefonoEncriptado);
+
+            // Guardar el cliente a través de la lógica de negocio
+            clienteNegocio.guardarCliente(cliente);
+        }
+
+        JOptionPane.showMessageDialog(this, "Se han insertado 20 clientes correctamente.");
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Ocurrió un error al insertar clientes: " + e.getMessage());
+        e.printStackTrace();
+    }
     }//GEN-LAST:event_btnInsercionMouseClicked
 
     /**

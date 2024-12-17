@@ -43,61 +43,83 @@ public class FrmConsultaArea extends javax.swing.JFrame {
         fldFechaFin.add(dateTimePicker2);
     }
     
-       public void generarReporteArea(LocalDateTime fechaInicio, LocalDateTime fechaFin, String tipoMesa, String ubicacion) {
-    // Set the file path for the report
+      // Set the file path for the report
     String reportFilePath = "Reporte Consulta Area.pdf";
 
-    // Create a PdfWriter object and initialize the PdfDocument
-    try (PdfWriter writer = new PdfWriter(reportFilePath)) {
+    public void generarReporteArea(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        
+        // Verificar que las fechas no sean nulas
+    if (fechaInicio == null || fechaFin == null) {
+        JOptionPane.showMessageDialog(this, "Las fechas no pueden ser nulas.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Crear EntityManager
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionJPA");
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        // Consulta JPQL con filtros
+        String jpql = "SELECT r FROM ReservaEntidad r WHERE r.fechaHoraReserva BETWEEN :fechaInicio AND :fechaFin ";
+
+        TypedQuery<ReservaEntidad> query = em.createQuery(jpql, ReservaEntidad.class);
+        query.setParameter("fechaInicio", Timestamp.valueOf(fechaInicio));
+        query.setParameter("fechaFin", Timestamp.valueOf(fechaFin));
+        
+      
+
+        // Obtener resultados
+        List<ReservaEntidad> reservas = query.getResultList();
+
+        // Verificar si hay resultados
+        if (reservas.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No se encontraron reservas con los filtros seleccionados.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Crear archivo PDF
+        PdfWriter writer = new PdfWriter(reportFilePath);
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc);
 
-        // Add title to the report
-        document.add(new Paragraph("Reporte de Reservas por Área")
-            .setBold()
-            .setFontSize(20)
-            .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER));
+        // Título del reporte
+        document.add(new Paragraph("Historial de Reservas por Área del Restaurante")
+                .setBold()
+                .setFontSize(18));
+        document.add(new Paragraph("Filtros Aplicados:")
+                .setFontSize(12)
+                .setItalic());
+        document.add(new Paragraph("Fecha Inicio: " + fechaInicio.toString() +
+                                   "\nFecha Fin: " + fechaFin.toString()));
 
-        // Add filter information
-        document.add(new Paragraph("Fecha Inicio: " + fechaInicio.toString()));
-        document.add(new Paragraph("Fecha Fin: " + fechaFin.toString()));
-        document.add(new Paragraph("Tipo de Mesa: " + tipoMesa));
-        document.add(new Paragraph("Ubicación: " + ubicacion));
+        // Encabezado de la tabla
+        document.add(new Paragraph("\nListado de Reservas:\n"));
 
-        // Add the data from the database (this is where you query the database)
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionJPA");
-        EntityManager em = emf.createEntityManager();
-
-        // Construct a query to fetch reservations based on the filters
-        String queryStr = "SELECT r FROM ReservaEntidad r WHERE r.fechaHoraReserva BETWEEN :fechaInicio AND :fechaFin "
-            + "AND r.codigoMesa = :tipoMesa AND r.ubicacion = :ubicacion";  // Using codigoMesa and ubicacion
-        TypedQuery<ReservaEntidad> query = em.createQuery(queryStr, ReservaEntidad.class);
-        query.setParameter("fechaInicio", Timestamp.valueOf(fechaInicio));
-        query.setParameter("fechaFin", Timestamp.valueOf(fechaFin));
-        query.setParameter("tipoMesa", tipoMesa);  // Now this refers to codigoMesa
-        query.setParameter("ubicacion", ubicacion);
-
-        List<ReservaEntidad> reservas = query.getResultList();
-
-        // Add the reservation details to the report
         for (ReservaEntidad reserva : reservas) {
-            document.add(new Paragraph("Reserva ID: " + reserva.getId()));
-            document.add(new Paragraph("Cliente: " + reserva.getNombreCompleto()));
-            document.add(new Paragraph("Mesa: " + reserva.getCodigoMesa()));  // Use codigoMesa
-            document.add(new Paragraph("Fecha y Hora: " + reserva.getFechaHoraReserva().toString()));
-            document.add(new Paragraph("----------------------------------------------------"));
+            String reservaInfo = String.format("ID: %d | Fecha y Hora: %s | Cliente: %s | Mesa: %s | Personas: %d | Costo: %.2f",
+                    reserva.getId(),
+                    reserva.getFechaHoraReserva(),
+                    reserva.getNombreCompleto(),
+                    reserva.getCodigoMesa(),
+                    reserva.getNumPersonas(),
+                    reserva.getCostoReserva());
+            document.add(new Paragraph(reservaInfo));
         }
 
-        // Close the document
+        // Cerrar documento
         document.close();
+        JOptionPane.showMessageDialog(this, "Reporte generado exitosamente en: " + reportFilePath, "Reporte generado", JOptionPane.INFORMATION_MESSAGE);
 
-        // Provide feedback to the user
-        JOptionPane.showMessageDialog(this, "Reporte generado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
     } catch (Exception e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al generar el reporte.", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Error al generar el reporte: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        em.close();
+        emf.close();
     }
-}
+        
+    }
+
 
     
 
@@ -115,10 +137,8 @@ public class FrmConsultaArea extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
         btnGenerarReporte = new javax.swing.JLabel();
         comboBoxTipoMesa = new javax.swing.JComboBox<>();
-        comboBoxUbicacion = new javax.swing.JComboBox<>();
         fldFechaInicio = new javax.swing.JPanel();
         fldFechaFin = new javax.swing.JPanel();
         fondo = new javax.swing.JLabel();
@@ -152,13 +172,8 @@ public class FrmConsultaArea extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel4.setText("Tipo de mesa");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 370, -1, -1));
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel5.setText("Ubicación");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 370, -1, -1));
+        jLabel4.setText("Tamaño de mesa");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 380, -1, -1));
 
         btnGenerarReporte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnGenerarReporte.png"))); // NOI18N
         btnGenerarReporte.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -170,10 +185,7 @@ public class FrmConsultaArea extends javax.swing.JFrame {
         getContentPane().add(btnGenerarReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 550, -1, -1));
 
         comboBoxTipoMesa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pequeña", "Mediana", "Grande" }));
-        getContentPane().add(comboBoxTipoMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 410, 110, 50));
-
-        comboBoxUbicacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Terraza", "General", "Ventana" }));
-        getContentPane().add(comboBoxUbicacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 410, 110, 50));
+        getContentPane().add(comboBoxTipoMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 420, 110, 50));
         getContentPane().add(fldFechaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 260, 350, 40));
         getContentPane().add(fldFechaFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 260, 350, 40));
 
@@ -197,10 +209,10 @@ public class FrmConsultaArea extends javax.swing.JFrame {
         LocalDateTime fechaInicio = dateTimePicker.getDateTimePermissive();
         LocalDateTime fechaFin = dateTimePicker2.getDateTimePermissive();
         String tipoMesa = comboBoxTipoMesa.getSelectedItem().toString();
-        String ubicacion = comboBoxUbicacion.getSelectedItem().toString();
+        
 
         // Llamar a la función para generar el reporte
-        generarReporteArea(fechaInicio, fechaFin, tipoMesa, ubicacion);
+        generarReporteArea(fechaInicio, fechaFin);
     }//GEN-LAST:event_btnGenerarReporteMouseClicked
 
     /**
@@ -242,7 +254,6 @@ public class FrmConsultaArea extends javax.swing.JFrame {
     private javax.swing.JLabel btnGenerarReporte;
     private javax.swing.JLabel btnRegresar;
     private javax.swing.JComboBox<String> comboBoxTipoMesa;
-    private javax.swing.JComboBox<String> comboBoxUbicacion;
     private javax.swing.JPanel fldFechaFin;
     private javax.swing.JPanel fldFechaInicio;
     private javax.swing.JLabel fondo;
@@ -250,6 +261,5 @@ public class FrmConsultaArea extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     // End of variables declaration//GEN-END:variables
 }

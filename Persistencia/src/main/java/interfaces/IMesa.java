@@ -39,13 +39,18 @@ public interface IMesa {
      */
     public void modificarMesa(MesaEntidad mesa);
 
+    
     /**
-     * Recupera una mesa por su ID único.
+     * Busca las mesas por seccion.
      * 
-     * @param id el identificador único de la mesa
-     * @return el objeto `MesaEntidad` que coincide con el ID dado, o null si no se encuentra
+     * @param seccion la seccion
+     * @return Una lista de objetos `Mesa` que cumplen con los criterios de disponibilidad. Si no se encuentran mesas
+     *         disponibles, se devuelve una lista vacía.
+     * 
      */
-    public MesaEntidad buscarUnMesa(Long id);
+    public List<MesaEntidad> buscarMesasPorUbicacion(String ubicacion) throws Exception;
+    
+ 
 
     /**
      * Recupera todas las mesas del sistema.

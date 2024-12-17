@@ -1,5 +1,6 @@
 package dto;
 
+import entidades.MesaEntidad;
 import entidades.ReservaEntidad;
 import java.util.Calendar;
 
@@ -26,17 +27,6 @@ public class ReservaDTO {
     public ReservaDTO() {
     }
 
-    /**
-     * Constructor para crear un objeto ReservaDTO con los detalles de la reserva.
-     * 
-     * @param nombreCompleto El nombre completo del cliente que realiza la reserva.
-     * @param telefono El teléfono del cliente.
-     * @param fechaHoraReserva La fecha y hora de la reserva.
-     * @param ubicacion La ubicación donde se realizará la reserva.
-     * @param numPersonas El número de personas que asistirán a la reserva.
-     * @param costoReserva El costo de la reserva.
-     * @param codigoMesa El código de la mesa reservada.
-     */
     public ReservaDTO(String nombreCompleto, String telefono, Calendar fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva, String codigoMesa) {
         this.nombreCompleto = nombreCompleto;
         this.telefono = telefono;
@@ -47,18 +37,6 @@ public class ReservaDTO {
         this.codigoMesa = codigoMesa;
     }
 
-    /**
-     * Constructor para crear un objeto ReservaDTO con todos los detalles, incluido el ID.
-     * 
-     * @param id El ID de la reserva.
-     * @param nombreCompleto El nombre completo del cliente que realiza la reserva.
-     * @param telefono El teléfono del cliente.
-     * @param fechaHoraReserva La fecha y hora de la reserva.
-     * @param ubicacion La ubicación donde se realizará la reserva.
-     * @param numPersonas El número de personas que asistirán a la reserva.
-     * @param costoReserva El costo de la reserva.
-     * @param codigoMesa El código de la mesa reservada.
-     */
     public ReservaDTO(Long id, String nombreCompleto, String telefono, Calendar fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva, String codigoMesa) {
         this.id = id;
         this.nombreCompleto = nombreCompleto;
@@ -70,21 +48,8 @@ public class ReservaDTO {
         this.codigoMesa = codigoMesa;
     }
 
-    /**
-     * Constructor para convertir un objeto ReservaEntidad en ReservaDTO.
-     * 
-     * @param r El objeto ReservaEntidad que se va a convertir.
-     */
-    public ReservaDTO(ReservaEntidad r) {
-        this.id = r.getId();
-        this.nombreCompleto = r.getNombreCompleto();
-        this.telefono = r.getTelefono();
-        this.fechaHoraReserva = r.getFechaHoraReserva();
-        this.ubicacion = r.getUbicacion();
-        this.numPersonas = r.getNumPersonas();
-        this.costoReserva = r.getCostoReserva();    
-        this.codigoMesa = r.getCodigoMesa();
-    }
+   
+    
 
     /**
      * Obtiene el ID de la reserva.
@@ -212,24 +177,14 @@ public class ReservaDTO {
         this.costoReserva = costoReserva;
     }
 
-    /**
-     * Obtiene el código de la mesa reservada.
-     * 
-     * @return El código de la mesa reservada.
-     */
     public String getCodigoMesa() {
         return codigoMesa;
     }
 
-    /**
-     * Establece el código de la mesa reservada.
-     * 
-     * @param codigoMesa El código de la mesa reservada.
-     */
     public void setCodigoMesa(String codigoMesa) {
         this.codigoMesa = codigoMesa;
     }
-
+    
     /**
      * Representación en formato de texto del objeto ReservaDTO.
      * 
@@ -239,4 +194,9 @@ public class ReservaDTO {
     public String toString() {
         return "ReservaDTO{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + ", fechaHoraReserva=" + fechaHoraReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + ", costoReserva=" + costoReserva + ", codigoMesa=" + codigoMesa + '}';
     }
+
+ 
+    
+    
+    
 }

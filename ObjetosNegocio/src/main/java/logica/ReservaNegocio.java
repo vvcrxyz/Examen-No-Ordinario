@@ -1,8 +1,14 @@
 package logica;
 
 import dao.ReservaDAO;
+import dto.ClienteDTO;
+import dto.MesaDTO;
 import dto.ReservaDTO;
+import entidades.ClienteEntidad;
+import entidades.MesaEntidad;
 import entidades.ReservaEntidad;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -54,17 +60,30 @@ public class ReservaNegocio {
         return entidad;
     }
 
-    /**
-     * Convierte un objeto ReservaEntidad a un objeto ReservaDTO.
-     * 
-     * @param entidad El objeto ReservaEntidad que se va a convertir.
-     * @return El objeto ReservaDTO correspondiente.
-     */
+ 
     private ReservaDTO convertir(ReservaEntidad entidad) {
         if (entidad == null) {
             return null;
         }
-        return new ReservaDTO(entidad);
+
+        // Extraer la información de la entidad y pasarla al constructor de ReservaDTO
+        // Usamos el código de la mesa de la entidad, que ahora es parte de la relación con MesaEntidad
+        String codigoMesa = null;
+        if (entidad.getCodigoMesa()!= null) {
+            codigoMesa = entidad.getCodigoMesa(); // Obtén el código de la mesa
+        }
+
+        // Crear y devolver el DTO con los datos extraídos de la entidad
+        return new ReservaDTO(
+            entidad.getId(),
+            entidad.getNombreCompleto(),
+            entidad.getTelefono(),
+            entidad.getFechaHoraReserva(),
+            entidad.getUbicacion(),
+            entidad.getNumPersonas(),
+            entidad.getCostoReserva(),
+            codigoMesa
+        );
     }
 
     /**
@@ -120,6 +139,115 @@ public class ReservaNegocio {
         ReservaEntidad entidad = reservaDAO.buscarUnaReserva(id);
         return convertir(entidad);
     }
+    
+    public List<ReservaDTO> buscarReservasPorClienteYFechas(String nombreCliente, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        // Obtener todas las reservas
+        List<ReservaDTO> todasReservas = buscarTodasReservas();
+        List<ReservaDTO> reservasFiltradas = new ArrayList<>();
+
+        for (ReservaDTO reserva : todasReservas) {
+            // Convertir fechaHoraReserva de Calendar a LocalDateTime
+            LocalDateTime fechaHoraReserva = reserva.getFechaHoraReserva().toInstant()
+                                                    .atZone(ZoneId.systemDefault())
+                                                    .toLocalDateTime();
+
+            // Filtrar por nombre del cliente y rango de fechas
+            if (reserva.getNombreCompleto().equalsIgnoreCase(nombreCliente) &&
+                (fechaHoraReserva.isAfter(fechaInicio) || fechaHoraReserva.isEqual(fechaInicio)) &&
+                (fechaHoraReserva.isBefore(fechaFin) || fechaHoraReserva.isEqual(fechaFin))) {
+                reservasFiltradas.add(reserva);
+            }
+        }
+        return reservasFiltradas;
+    }
+
+    
+    /**
+     * Método que retorna las reservas con una cliente especificado
+     * 
+     * @param cliente Cliente a buscar
+     * @return una lista de las reservas
+     */
+    public List<ReservaDTO> buscarReservasPorCliente(ClienteDTO cliente)  {
+        List<ReservaDTO> reservasEncontradas = new ArrayList<>();
+        List<ReservaEntidad> reservasEntidad = new ArrayList<>();
+
+        ClienteEntidad clienteFiltro = new ClienteEntidad(cliente.getId(), cliente.getTelefono(), cliente.getNombreCompleto());
+
+        try {
+            // Se guarda la reserva a través del DAO
+            reservasEntidad = reservaDAO.buscarReservaPorCliente(clienteFiltro);
+        } catch (Exception ex) {
+            // Se maneja el error de persistencia
+            System.out.println("Error al buscar las reservas: " + ex.getMessage());
+        }
+
+        // Verifica si no se encontraron reservas
+        if (reservasEntidad == null || reservasEntidad.isEmpty()) {
+            return null;
+        }
+
+        // Convierte las entidades a DTO
+        for (ReservaEntidad reserva : reservasEntidad) {
+            ReservaDTO reservaD = new ReservaDTO(
+                reserva.getNombreCompleto(), 
+                reserva.getTelefono(), 
+                reserva.getFechaHoraReserva(), 
+                reserva.getUbicacion(), 
+                reserva.getNumPersonas(), 
+                reserva.getCostoReserva(), 
+                reserva.getCodigoMesa()
+            );
+
+            reservasEncontradas.add(reservaD);  // Añade la reservaDTO a la lista
+        }
+
+        return reservasEncontradas;
+    }
+    
+    /**
+     * Método que retorna las reservas con una mesa especificada
+     * 
+     * @param mesa Mesa a buscar
+     * @return una lista de las reservas
+     * @throws Exception Si ocurre un error en la lógica del negocio al 
+     *                          procesar la reserva.
+     */
+    public List<ReservaDTO> buscarReservasPorMesa(MesaDTO mesa) throws Exception {
+        
+        List<ReservaDTO> reservasEncontradas = new ArrayList<>();
+        List<ReservaEntidad> reservasEntidad = new ArrayList<>();
+
+
+        MesaEntidad mesaFiltro = new MesaEntidad();
+        mesaFiltro.setCodigoMesa(mesa.getCodigoMesa());
+        mesaFiltro.setCapacidad(mesa.getCapacidad());
+        mesaFiltro.setTipo(mesa.getTipo());
+        mesaFiltro.setUbicacion(mesa.getUbicacion());
+
+        try {
+            // Se guarda la reserva a través del DAO
+            reservasEntidad = reservaDAO.buscarReservaPorMesa(mesaFiltro);
+            reservasEntidad.toString();
+        } catch (Exception ex) {
+            // Se maneja el error de persistencia
+            System.out.println("Error al buscar las reservas");
+        }
+        
+        if(reservasEntidad == null)
+            return null;
+        
+        for(ReservaEntidad reserva : reservasEntidad){
+        
+            ReservaDTO reservaDTO = new ReservaDTO(reserva.getNombreCompleto(), reserva.getTelefono(), reserva.getFechaHoraReserva(), reserva.getUbicacion(), reserva.getNumPersonas(), reserva.getCostoReserva(), reserva.getCodigoMesa());
+            reservasEncontradas.add(reservaDTO);
+            
+        }
+        
+        return reservasEncontradas;
+        
+    }
+
 
     /**
      * Busca todas las reservas en la base de datos y las devuelve como una lista de objetos ReservaDTO.

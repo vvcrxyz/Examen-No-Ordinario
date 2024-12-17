@@ -19,7 +19,7 @@ public class MesaEntidad implements Serializable {
      * Se utiliza como clave primaria en la base de datos.
      */
     @Id
-    @Column(name = "codigoMesa", length = 20, nullable = false, unique = true)
+    @Column(name = "codigoMesa", length = 20, nullable = false)
     private String codigoMesa; // Código único (ej. TER-2-001)
 
     /**

@@ -6,6 +6,8 @@
 
 package interfaces;
 
+import entidades.ClienteEntidad;
+import entidades.MesaEntidad;
 import entidades.ReservaEntidad;
 import java.util.List;
 
@@ -39,14 +41,24 @@ public interface IReserva {
      */
     public void modificarReserva(ReservaEntidad reserva);
 
-    /**
-     * Recupera una reserva por su ID único.
-     * 
-     * @param id el identificador único de la reserva
-     * @return el objeto `ReservaEntidad` que coincide con el ID dado, o null si no se encuentra
-     */
-    public ReservaEntidad buscarUnReserva(Long id);
 
+    /**
+     * Busca todas las reservas por mesa
+     * 
+     * @param mesa la mesa en cuesttión
+     * @return Una lista con todas las reservas con ese mesa
+     *
+     */
+    public List<ReservaEntidad> buscarReservaPorMesa(MesaEntidad mesa) throws Exception;
+    
+    /**
+     * Busca todas las reservas por cliente
+     * 
+     * @param cliente el cliente en cuesttión
+     * @return Una lista con todas las reservas con ese cliente
+     * @throws PersistenciaException Si ocurre un error al realizar la consulta.
+     */
+    public List<ReservaEntidad> buscarReservaPorCliente(ClienteEntidad cliente);
     /**
      * Recupera todas las reservas del sistema.
      * 

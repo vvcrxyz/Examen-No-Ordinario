@@ -2,6 +2,7 @@ package entidades;
 
 import java.io.Serializable;
 import java.sql.Time;
+import java.time.LocalTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,11 +27,11 @@ public class RestauranteEntidad implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "horaApertura", nullable = false)
-    private Time horaApertura;
+    @Column(name = "horaApertura", nullable = false, columnDefinition = "TIME")
+    private LocalTime horaApertura;
 
-    @Column(name = "horaCierre", nullable = false)
-    private Time horaCierre;
+    @Column(name = "horaCierre", nullable = false, columnDefinition = "TIME")
+    private LocalTime horaCierre;
 
     // Constructor por defecto
     public RestauranteEntidad() {
@@ -42,7 +43,7 @@ public class RestauranteEntidad implements Serializable {
      * @param horaApertura la hora de apertura del restaurante
      * @param horaCierre la hora de cierre del restaurante
      */
-    public RestauranteEntidad(Time horaApertura, Time horaCierre) {
+    public RestauranteEntidad(LocalTime horaApertura, LocalTime horaCierre) {
         this.horaApertura = horaApertura;
         this.horaCierre = horaCierre;
     }
@@ -54,7 +55,7 @@ public class RestauranteEntidad implements Serializable {
      * @param horaApertura la hora de apertura del restaurante
      * @param horaCierre la hora de cierre del restaurante
      */
-    public RestauranteEntidad(Long id, Time horaApertura, Time horaCierre) {
+    public RestauranteEntidad(Long id, LocalTime horaApertura, LocalTime horaCierre) {
         this.id = id;
         this.horaApertura = horaApertura;
         this.horaCierre = horaCierre;
@@ -85,7 +86,7 @@ public class RestauranteEntidad implements Serializable {
      * 
      * @return la hora de apertura del restaurante
      */
-    public Time getHoraApertura() {
+    public LocalTime getHoraApertura() {
         return horaApertura;
     }
 
@@ -94,7 +95,7 @@ public class RestauranteEntidad implements Serializable {
      * 
      * @param horaApertura la hora de apertura del restaurante
      */
-    public void setHoraApertura(Time horaApertura) {
+    public void setHoraApertura(LocalTime horaApertura) {
         this.horaApertura = horaApertura;
     }
 
@@ -103,7 +104,7 @@ public class RestauranteEntidad implements Serializable {
      * 
      * @return la hora de cierre del restaurante
      */
-    public Time getHoraCierre() {
+    public LocalTime getHoraCierre() {
         return horaCierre;
     }
 
@@ -112,7 +113,7 @@ public class RestauranteEntidad implements Serializable {
      * 
      * @param horaCierre la hora de cierre del restaurante
      */
-    public void setHoraCierre(Time horaCierre) {
+    public void setHoraCierre(LocalTime horaCierre) {
         this.horaCierre = horaCierre;
     }
 

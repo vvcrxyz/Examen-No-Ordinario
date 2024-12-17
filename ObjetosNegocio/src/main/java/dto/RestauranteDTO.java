@@ -1,7 +1,7 @@
 package dto;
 
 import entidades.RestauranteEntidad;
-import java.sql.Time;
+import java.time.LocalTime;
 
 /**
  * Data Transfer Object (DTO) para representar la información de un restaurante.
@@ -11,8 +11,8 @@ import java.sql.Time;
 public class RestauranteDTO {
     
     private Long id;
-    private Time horaApertura;
-    private Time horaCierre;
+    private LocalTime horaApertura;
+    private LocalTime horaCierre;
 
     /**
      * Constructor por defecto.
@@ -27,7 +27,7 @@ public class RestauranteDTO {
      * @param horaApertura La hora de apertura del restaurante.
      * @param horaCierre La hora de cierre del restaurante.
      */
-    public RestauranteDTO(Time horaApertura, Time horaCierre) {
+    public RestauranteDTO(LocalTime horaApertura, LocalTime horaCierre) {
         this.horaApertura = horaApertura;
         this.horaCierre = horaCierre;
     }
@@ -39,7 +39,7 @@ public class RestauranteDTO {
      * @param horaApertura La hora de apertura del restaurante.
      * @param horaCierre La hora de cierre del restaurante.
      */
-    public RestauranteDTO(Long id, Time horaApertura, Time horaCierre) {
+    public RestauranteDTO(Long id, LocalTime horaApertura, LocalTime horaCierre) {
         this.id = id;
         this.horaApertura = horaApertura;
         this.horaCierre = horaCierre;
@@ -79,7 +79,7 @@ public class RestauranteDTO {
      * 
      * @return La hora de apertura del restaurante.
      */
-    public Time getHoraApertura() {
+    public LocalTime getHoraApertura() {
         return horaApertura;
     }
 
@@ -88,7 +88,7 @@ public class RestauranteDTO {
      * 
      * @param horaApertura La hora de apertura del restaurante.
      */
-    public void setHoraApertura(Time horaApertura) {
+    public void setHoraApertura(LocalTime horaApertura) {
         this.horaApertura = horaApertura;
     }
 
@@ -97,7 +97,7 @@ public class RestauranteDTO {
      * 
      * @return La hora de cierre del restaurante.
      */
-    public Time getHoraCierre() {
+    public LocalTime getHoraCierre() {
         return horaCierre;
     }
 
@@ -106,7 +106,7 @@ public class RestauranteDTO {
      * 
      * @param horaCierre La hora de cierre del restaurante.
      */
-    public void setHoraCierre(Time horaCierre) {
+    public void setHoraCierre(LocalTime horaCierre) {
         this.horaCierre = horaCierre;
     }
 

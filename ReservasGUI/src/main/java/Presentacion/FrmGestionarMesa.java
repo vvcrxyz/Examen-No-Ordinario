@@ -4,10 +4,15 @@
  */
 package Presentacion;
 
+import Util.ButtonRenderer;
 import dto.MesaDTO;
+import entidades.MesaEntidad;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import utilerias.ButtonRenderer;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import logica.MesaNegocio;
 import utilerias.ButtonEditor;
@@ -21,7 +26,10 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
 
     MesaNegocio mesaNegocio = new MesaNegocio();
     List<MesaDTO> listaMesas = mesaNegocio.buscarTodasMesas();
-
+    FrmGestionarMesa frmGestionarMesa;
+    DefaultTableModel modeloTabla = new DefaultTableModel();
+    List<MesaDTO> mesas = new ArrayList<>();
+    FrmModuloMesas frmModuloMesas;
     /**
      * Creates new form FrmGestionarMesa
      */
@@ -46,6 +54,28 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
     
     }
     
+    private void cargarDatosTablaMesas() {
+        
+        modeloTabla = (DefaultTableModel) tblMesa.getModel();
+        modeloTabla.setRowCount(0);
+        
+        if(mesas == null || mesas.isEmpty())
+            return;
+        
+        for(MesaDTO mesa : mesas){
+        
+            String codigo  = mesa.getCodigoMesa();
+
+            
+            Object[] fila = new Object[2];
+            fila[0] = codigo;
+            
+            modeloTabla.addRow(fila);
+            
+        }
+        
+    }
+    
     private void actualizarTabla(List<MesaDTO> mesas) {
         DefaultTableModel modeloTabla = (DefaultTableModel) tblMesa.getModel();
         // Limpia la tabla antes de agregar los nuevos datos
@@ -61,12 +91,47 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
         }
 
         // Configura renderizadores y editores para las columnas de botones
-        tblMesa.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer("Editar"));
-        tblMesa.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor(tblMesa, "Editar", "s"));
+        tblMesa.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer("Editar", Color.ORANGE));
+        tblMesa.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor("Editar", new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    
+                    if(tblMesa.getSelectedRow() == -1)
+                        return;
+                    
+                    MesaDTO mesaSeleccionada = mesas.get(tblMesa.getSelectedRow());
+                    
+                    FrmEditarMesa frm = new FrmEditarMesa(frmGestionarMesa, mesaSeleccionada);
+                    
+                    frm.setVisible(true);
+                    cargarDatosTablaMesas();
+                    cargarMesasPorUbicacion();
+                   
+                          
+                }
 
-        tblMesa.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer("Eliminar"));
-        tblMesa.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(tblMesa, "Eliminar", "Eliminar"));
+        }));
+ 
     }
+    
+    private void cargarMesasPorUbicacion(){
+        if(mesas != null) {
+            mesas.clear();  // Clear the list of mesas to reload filtered data
+        }
+
+        String ubicacionSeleccionada = (String) comboBoxUbicacion.getSelectedItem();
+        MesaDTO ubicacion = new MesaDTO();
+        ubicacion.setUbicacion(ubicacionSeleccionada);  // Set selected location
+
+        try {
+            mesas = mesaNegocio.buscarMesasPorUbicacion(ubicacion);  // Fetch mesas for the selected location
+        } catch (Exception ex) {
+           
+        }
+
+        cargarDatosTablaMesas();  // Refresh the table with the new list
+    }
+
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -84,6 +149,7 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
         btnInsertarMesa = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblMesa = new javax.swing.JTable();
+        btnEliminarMesa = new javax.swing.JLabel();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -109,6 +175,7 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 180, -1, -1));
 
         comboBoxUbicacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Terraza", "General", "Ventana" }));
+        comboBoxUbicacion.setSelectedIndex(-1);
         comboBoxUbicacion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboBoxUbicacionActionPerformed(evt);
@@ -127,17 +194,17 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
 
         tblMesa.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
             },
             new String [] {
-                "Codigo mesa", "Editar", "Eliminar"
+                "Codigo mesa", "Editar"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -147,6 +214,15 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tblMesa);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 230, 650, 360));
+
+        btnEliminarMesa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnEliminarMesa.png"))); // NOI18N
+        btnEliminarMesa.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEliminarMesa.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEliminarMesaMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnEliminarMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 630, -1, -1));
 
         fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FrmMesas.jpg"))); // NOI18N
         getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -184,6 +260,67 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
         actualizarTabla(mesasFiltradas);
     }//GEN-LAST:event_comboBoxUbicacionActionPerformed
 
+    private List<MesaDTO> filtrarMesasPorUbicacion(String ubicacion) {
+        List<MesaDTO> mesasFiltradas = new ArrayList<>();
+        for (MesaDTO mesa : listaMesas) {
+            if (mesa.getUbicacion().equals(ubicacion)) {
+                mesasFiltradas.add(mesa);
+            }
+        }
+        return mesasFiltradas;
+    }
+
+    
+    private void btnEliminarMesaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEliminarMesaMouseClicked
+            int filaSeleccionada = tblMesa.getSelectedRow();
+            if (filaSeleccionada == -1) {
+                JOptionPane.showMessageDialog(this, "Selecciona el código de la mesa de la tabla", "Eliminar Mesa", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Obtener la mesa seleccionada desde la lista filtrada
+            String ubicacionSeleccionada = (String) comboBoxUbicacion.getSelectedItem();
+            List<MesaDTO> mesasFiltradas = filtrarMesasPorUbicacion(ubicacionSeleccionada);
+            if (mesasFiltradas.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No hay mesas disponibles en esta ubicación.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            MesaDTO mesaSeleccionada = mesasFiltradas.get(filaSeleccionada);
+
+            int opcion = JOptionPane.showConfirmDialog(
+                this,
+                String.format("El código a eliminar es %s. ¿Continuar?", mesaSeleccionada.getCodigoMesa()),
+                "Eliminar Mesa",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (opcion != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            try {
+                // Lógica de conversión: DTO -> Entidad
+                MesaEntidad mesaEntidad = new MesaEntidad();
+                mesaEntidad.setCodigoMesa(mesaSeleccionada.getCodigoMesa());
+
+                // Eliminar la mesa en la base de datos
+                mesaNegocio.eliminarMesa(mesaEntidad); // Invoca el método de negocio para eliminar de la base de datos
+                JOptionPane.showMessageDialog(this, "Mesa eliminada con el código: " + mesaSeleccionada.getCodigoMesa(), "Eliminar Mesa", JOptionPane.INFORMATION_MESSAGE);
+
+                // Recargar las mesas después de la eliminación
+                listaMesas = mesaNegocio.buscarTodasMesas();  // Recargar todas las mesas desde la base de datos
+                if (listaMesas == null || listaMesas.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No se encontraron mesas disponibles.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    cargarMesasPorUbicacion();  // Filtrar y actualizar las mesas por la ubicación seleccionada
+                }
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al eliminar la mesa: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+    }//GEN-LAST:event_btnEliminarMesaMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -220,6 +357,7 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel btnEliminarMesa;
     private javax.swing.JLabel btnInsertarMesa;
     private javax.swing.JLabel btnRegresar;
     private javax.swing.JComboBox<String> comboBoxUbicacion;
@@ -230,3 +368,4 @@ public class FrmGestionarMesa extends javax.swing.JFrame {
     private javax.swing.JTable tblMesa;
     // End of variables declaration//GEN-END:variables
 }
+

@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -76,36 +78,6 @@ public class ReservaEntidad implements Serializable {
     public ReservaEntidad() {
     }
 
-    /**
-     * Constructor para crear una reserva sin especificar el código de la mesa.
-     * 
-     * @param nombreCompleto Nombre del cliente.
-     * @param telefono Número de teléfono del cliente.
-     * @param fechaHoraReserva Fecha y hora de la reserva.
-     * @param ubicacion Ubicación solicitada para la mesa.
-     * @param numPersonas Número de personas para la reserva.
-     * @param costoReserva Costo total de la reserva.
-     */
-    public ReservaEntidad(String nombreCompleto, String telefono, Calendar fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva) {
-        this.nombreCompleto = nombreCompleto;
-        this.telefono = telefono;
-        this.fechaHoraReserva = fechaHoraReserva;
-        this.ubicacion = ubicacion;
-        this.numPersonas = numPersonas;
-        this.costoReserva = costoReserva;
-    }
-
-    /**
-     * Constructor para crear una reserva con el código de la mesa especificado.
-     * 
-     * @param nombreCompleto Nombre del cliente.
-     * @param telefono Número de teléfono del cliente.
-     * @param fechaHoraReserva Fecha y hora de la reserva.
-     * @param ubicacion Ubicación solicitada para la mesa.
-     * @param numPersonas Número de personas para la reserva.
-     * @param costoReserva Costo total de la reserva.
-     * @param codigoMesa Código de la mesa asignada.
-     */
     public ReservaEntidad(String nombreCompleto, String telefono, Calendar fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva, String codigoMesa) {
         this.nombreCompleto = nombreCompleto;
         this.telefono = telefono;
@@ -116,18 +88,6 @@ public class ReservaEntidad implements Serializable {
         this.codigoMesa = codigoMesa;
     }
 
-    /**
-     * Constructor completo para crear una reserva con todos los atributos.
-     * 
-     * @param id Identificador único de la reserva.
-     * @param nombreCompleto Nombre del cliente.
-     * @param telefono Número de teléfono del cliente.
-     * @param fechaHoraReserva Fecha y hora de la reserva.
-     * @param ubicacion Ubicación solicitada para la mesa.
-     * @param numPersonas Número de personas para la reserva.
-     * @param costoReserva Costo total de la reserva.
-     * @param codigoMesa Código de la mesa asignada.
-     */
     public ReservaEntidad(Long id, String nombreCompleto, String telefono, Calendar fechaHoraReserva, String ubicacion, int numPersonas, double costoReserva, String codigoMesa) {
         this.id = id;
         this.nombreCompleto = nombreCompleto;
@@ -138,6 +98,8 @@ public class ReservaEntidad implements Serializable {
         this.costoReserva = costoReserva;
         this.codigoMesa = codigoMesa;
     }
+
+    
 
     // Getters y Setters
     public Long getId() {
@@ -203,8 +165,8 @@ public class ReservaEntidad implements Serializable {
     public void setCodigoMesa(String codigoMesa) {
         this.codigoMesa = codigoMesa;
     }
-
-    /**
+    
+        /**
      * Representa la reserva como una cadena de texto.
      * 
      * @return Una cadena con los detalles de la reserva.
@@ -213,4 +175,9 @@ public class ReservaEntidad implements Serializable {
     public String toString() {
         return "ReservaEntidad{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + ", fechaHoraReserva=" + fechaHoraReserva + ", ubicacion=" + ubicacion + ", numPersonas=" + numPersonas + ", costoReserva=" + costoReserva + ", codigoMesa=" + codigoMesa + '}';
     }
+
+ 
+
+
+    
 }

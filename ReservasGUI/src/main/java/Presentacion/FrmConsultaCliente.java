@@ -5,16 +5,15 @@
 package Presentacion;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
-import entidades.ReservaEntidad;
-import java.awt.FlowLayout;
-import java.sql.Timestamp;
+import dto.ClienteDTO;
+import dto.ReservaDTO;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import logica.ClienteNegocio;
+import logica.Encriptado;
+import logica.ReservaNegocio;
 
 /**
  *
@@ -23,24 +22,53 @@ import javax.swing.JOptionPane;
 public class FrmConsultaCliente extends javax.swing.JFrame {
 
     DateTimePicker dateTimePicker = new DateTimePicker();
-    
+    DateTimePicker dateTimePicker2 = new DateTimePicker();
+    ClienteNegocio clienteNegocio = new ClienteNegocio();
+    ReservaNegocio reservaNegocio = new ReservaNegocio();
     /**
      * Creates new form FrmConsultaCliente
      */
     public FrmConsultaCliente() {
         initComponents();
         
-         fldFechaReserva.setLayout(new FlowLayout());
-        fldFechaReserva.add(dateTimePicker);
+        
+        fldFechaReservaInicial.add(dateTimePicker);
+       
+        fldFechaReservaFinal.add(dateTimePicker2);
+        
+        llenarBoxNombreCompleto(clienteNegocio.buscarClientes());
     }
     
-    private void mostrarReservas(List<ReservaEntidad> reservas) {
-        // Mostrar las reservas encontradas (esto puede hacerse usando un JTable o cualquier otro componente de UI)
-        for (ReservaEntidad reserva : reservas) {
-            // Aquí puedes mostrar los detalles de las reservas, por ejemplo, agregándolos a un JTable
-            System.out.println("ID: " + reserva.getId() + ", Cliente: " + reserva.getNombreCompleto() + ", Fecha: " + reserva.getFechaHoraReserva());
+   
+    
+    private void llenarBoxNombreCompleto(List<ClienteDTO> clientes) {
+        comboBoxNombreCompleto.removeAllItems();
+
+        // Agregar los nombres completos al ComboBox
+        for (ClienteDTO cliente : clientes) {
+            comboBoxNombreCompleto.addItem(cliente.getNombreCompleto());
         }
+
+        // Listener para actualizar el teléfono según el cliente seleccionado
+        comboBoxNombreCompleto.addActionListener(evt -> {
+            int selectedIndex = comboBoxNombreCompleto.getSelectedIndex();
+            if (selectedIndex >= 0) {
+                ClienteDTO clienteSeleccionado = clientes.get(selectedIndex);
+                String telefonoEncriptado = clienteSeleccionado.getTelefono();
+
+                try {
+                    // Desencriptar el teléfono utilizando la clave proporcionada
+                    String telefonoDesencriptado = Encriptado.decrypt(telefonoEncriptado, "1234567890123456"); // Asegúrate de usar la misma clave
+                    campoTextoTelefono.setText(telefonoDesencriptado);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Error al desencriptar el teléfono: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
     }
+    
+  
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -53,13 +81,17 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
 
         btnRegresar = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        campoTextoTelefono = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        campoTextoNombreCompleto = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         btnMostrar = new javax.swing.JLabel();
-        fldFechaReserva = new javax.swing.JPanel();
+        fldFechaReservaInicial = new javax.swing.JPanel();
+        campoTextoTelefono = new javax.swing.JTextField();
+        comboBoxNombreCompleto = new javax.swing.JComboBox<>();
+        jLabel7 = new javax.swing.JLabel();
+        fldFechaReservaFinal = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblCliente = new javax.swing.JTable();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -78,23 +110,21 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Consulta cliente");
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 30, -1, -1));
-        getContentPane().add(campoTextoTelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 300, 230, 40));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel6.setText("Fecha de reserva");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 360, -1, -1));
+        jLabel6.setText("Fecha de reserva Final");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 430, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Telefono");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 300, -1, -1));
-        getContentPane().add(campoTextoNombreCompleto, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 240, 230, 40));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 280, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Nombre completo");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 240, -1, -1));
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, -1, -1));
 
         btnMostrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnMostrar.png"))); // NOI18N
         btnMostrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -103,8 +133,47 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
                 btnMostrarMouseClicked(evt);
             }
         });
-        getContentPane().add(btnMostrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 530, -1, -1));
-        getContentPane().add(fldFechaReserva, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 360, 350, 40));
+        getContentPane().add(btnMostrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 540, -1, -1));
+        getContentPane().add(fldFechaReservaInicial, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 380, 350, 40));
+
+        campoTextoTelefono.setEditable(false);
+        campoTextoTelefono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoTextoTelefonoActionPerformed(evt);
+            }
+        });
+        getContentPane().add(campoTextoTelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 280, 200, 40));
+
+        getContentPane().add(comboBoxNombreCompleto, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 220, 280, 40));
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel7.setText("Fecha de reserva Inicial");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 340, -1, -1));
+        getContentPane().add(fldFechaReservaFinal, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 460, 350, 40));
+
+        tblCliente.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Nombre Cliente", "Telefono", "Reserva"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tblCliente);
+
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 290, -1, -1));
 
         fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FrmMesas.jpg"))); // NOI18N
         getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -121,55 +190,38 @@ public class FrmConsultaCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegresarMouseClicked
 
     private void btnMostrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMostrarMouseClicked
-        // TODO add your handling code here:
-         // Obtener los valores de los campos de búsqueda
-    String nombreCliente = campoTextoNombreCompleto.getText().trim();
-    String telefonoCliente = campoTextoTelefono.getText().trim();
-    LocalDateTime fechaReserva = dateTimePicker.getDateTimePermissive();
-    
-    // Construir la consulta basada en los filtros ingresados
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("ConexionJPA");
-    EntityManager em = emf.createEntityManager();
-    
-    StringBuilder queryStr = new StringBuilder("SELECT r FROM ReservaEntidad r WHERE 1=1");
+          // Obtener el nombre completo del cliente seleccionado
+        String nombreCliente = (String) comboBoxNombreCompleto.getSelectedItem();
 
-if (!nombreCliente.isEmpty()) {
-    queryStr.append(" AND r.cliente.nombreCompleto LIKE :nombreCliente");
-}
+        // Obtener las fechas de reserva seleccionadas
+        LocalDateTime fechaInicio = dateTimePicker.getDateTimePermissive();
+        LocalDateTime fechaFin = dateTimePicker2.getDateTimePermissive();
 
-if (!telefonoCliente.isEmpty()) {
-    queryStr.append(" AND r.cliente.telefono LIKE :telefonoCliente");
-}
+        if (nombreCliente != null && fechaInicio != null && fechaFin != null) {
+            // Llamar al negocio para obtener las reservas filtradas
+            List<ReservaDTO> reservasFiltradas = reservaNegocio.buscarReservasPorClienteYFechas(nombreCliente, fechaInicio, fechaFin);
 
-if (fechaReserva != null) {
-    queryStr.append(" AND r.fechaHoraReserva = :fechaReserva");
-}
+            // Llenar la tabla con las reservas filtradas
+            DefaultTableModel model = (DefaultTableModel) tblCliente.getModel();
+            model.setRowCount(0);  // Limpiar la tabla
 
-TypedQuery<ReservaEntidad> query = em.createQuery(queryStr.toString(), ReservaEntidad.class);
-    
-    // Establecer los parámetros de la consulta
-    if (!nombreCliente.isEmpty()) {
-        query.setParameter("nombreCliente", "%" + nombreCliente + "%");
-    }
-    if (!telefonoCliente.isEmpty()) {
-        query.setParameter("telefonoCliente", "%" + telefonoCliente + "%");
-    }
-    if (fechaReserva != null) {
-        query.setParameter("fechaReserva", Timestamp.valueOf(fechaReserva));
-    }
-    
-    // Ejecutar la consulta y obtener los resultados
-    List<ReservaEntidad> reservas = query.getResultList();
-    
-    // Si no se encuentran reservas, mostrar un mensaje
-    if (reservas.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "No se encontraron reservas con los criterios de búsqueda.", "Resultado", JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        // Si se encuentran reservas, mostrarlas (puedes usar una tabla o lista para mostrar los resultados)
-        mostrarReservas(reservas);
-    }
-        
+            for (ReservaDTO reserva : reservasFiltradas) {
+                // Agregar cada reserva como una fila en la tabla
+                model.addRow(new Object[]{
+                    reserva.getNombreCompleto(),
+                    reserva.getTelefono(),
+                    
+                });
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos de búsqueda.");
+        }
     }//GEN-LAST:event_btnMostrarMouseClicked
+
+    private void campoTextoTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTextoTelefonoActionPerformed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_campoTextoTelefonoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -209,13 +261,17 @@ TypedQuery<ReservaEntidad> query = em.createQuery(queryStr.toString(), ReservaEn
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnMostrar;
     private javax.swing.JLabel btnRegresar;
-    private javax.swing.JTextField campoTextoNombreCompleto;
     private javax.swing.JTextField campoTextoTelefono;
-    private javax.swing.JPanel fldFechaReserva;
+    private javax.swing.JComboBox<String> comboBoxNombreCompleto;
+    private javax.swing.JPanel fldFechaReservaFinal;
+    private javax.swing.JPanel fldFechaReservaInicial;
     private javax.swing.JLabel fondo;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tblCliente;
     // End of variables declaration//GEN-END:variables
 }

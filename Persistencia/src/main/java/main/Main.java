@@ -75,22 +75,22 @@ public class Main {
       //////////////////////////////
      //////////////////////////////  
      
-     // CREAMOS UNA FACTORY DE ENTITY MANAGERS
-        EntityManagerFactory managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
-        // CREAMOS UN OBJETO EM QUE REPRESENTA A LA BD EN CÓDIGO
-        EntityManager entityManager = managerFactory.createEntityManager();
-        //INICIAMOS LA TRANSACCION
-        entityManager.getTransaction().begin();
-        
-        ReservaEntidad entidad = new ReservaEntidad("Nomar", "64415", Calendar.getInstance(Locale.JAPAN), "Ventana", 2, 2);
-        
-        entityManager.persist(entidad );
-
-        //MANDAMOS A EJECUTAR LA TRANSACCION
-        entityManager.getTransaction().commit();
-        //CERRAMOS
-        entityManager.close();
-        managerFactory.close();
+//     // CREAMOS UNA FACTORY DE ENTITY MANAGERS
+//        EntityManagerFactory managerFactory = Persistence.createEntityManagerFactory("ConexionJPA");
+//        // CREAMOS UN OBJETO EM QUE REPRESENTA A LA BD EN CÓDIGO
+//        EntityManager entityManager = managerFactory.createEntityManager();
+//        //INICIAMOS LA TRANSACCION
+//        entityManager.getTransaction().begin();
+//        
+//        ReservaEntidad entidad = new ReservaEntidad("Nomar", "64415", Calendar.getInstance(Locale.JAPAN), "Ventana", 2, 2);
+//        
+//        entityManager.persist(entidad );
+//
+//        //MANDAMOS A EJECUTAR LA TRANSACCION
+//        entityManager.getTransaction().commit();
+//        //CERRAMOS
+//        entityManager.close();
+//        managerFactory.close();
      
          //////////////////////////////////
         //////////////////////////////////

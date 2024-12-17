@@ -59,6 +59,8 @@ public class ClienteNegocio {
     public void guardarCliente(ClienteDTO c) {
         clienteDAO.guardarCliente(convertir(c));
     }
+    
+    
 
     /**
      * Busca un cliente por su ID en la base de datos.

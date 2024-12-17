@@ -6,6 +6,8 @@ package Presentacion;
 
 import com.github.lgooddatepicker.components.TimePicker;
 import dto.RestauranteDTO;
+import java.sql.Time;
+import java.time.LocalTime;
 import javax.swing.JOptionPane;
 import logica.RestauranteNegocio;
 /**
@@ -99,27 +101,31 @@ public class FrmCambiarHorario extends javax.swing.JFrame {
 
     private void btnGuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGuardarMouseClicked
         // TODO add your handling code here:
-        try {
-        // Obtener las horas seleccionadas de los TimePickers
-        java.sql.Time horaApertura = java.sql.Time.valueOf(timePicker.getTime());
-        java.sql.Time horaCierre = java.sql.Time.valueOf(timePicker2.getTime());
+            try {
+            // Obtener las horas seleccionadas de los TimePickers
+            Time horaAperturaSQL = Time.valueOf(timePicker.getTime());
+            Time horaCierreSQL = Time.valueOf(timePicker2.getTime());
 
-        // Crear el DTO de Restaurante con los datos
-        RestauranteDTO restaurante = new RestauranteDTO();
-        restaurante.setHoraApertura(horaApertura);
-        restaurante.setHoraCierre(horaCierre);
+            // Convertir de java.sql.Time a LocalTime
+            LocalTime horaApertura = horaAperturaSQL.toLocalTime();
+            LocalTime horaCierre = horaCierreSQL.toLocalTime();
 
-        // Llamar a la lógica de negocio para guardar los datos
-        RestauranteNegocio negocio = new RestauranteNegocio();
-        negocio.guardarRestaurante(restaurante);
+            // Crear el DTO de Restaurante con los datos
+            RestauranteDTO restaurante = new RestauranteDTO();
+            restaurante.setHoraApertura(horaApertura);
+            restaurante.setHoraCierre(horaCierre);
 
-        // Mostrar mensaje de éxito
-        JOptionPane.showMessageDialog(this, "Horario guardado correctamente.");
-    } catch (Exception ex) {
-        // Manejar errores
-        JOptionPane.showMessageDialog(this, "Error al guardar horario: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        ex.printStackTrace();
-    }
+            // Llamar a la lógica de negocio para guardar o actualizar
+            RestauranteNegocio negocio = new RestauranteNegocio();
+            negocio.guardarOActualizarRestaurante(restaurante);
+
+            // Mostrar mensaje de éxito
+            JOptionPane.showMessageDialog(this, "Horario guardado o actualizado correctamente.");
+        } catch (Exception ex) {
+            // Manejar errores
+            JOptionPane.showMessageDialog(this, "Error al guardar horario: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
     }//GEN-LAST:event_btnGuardarMouseClicked
 
     /**

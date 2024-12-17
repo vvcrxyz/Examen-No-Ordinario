@@ -3,6 +3,7 @@ package logica;
 import conexion.ConexionBD;
 import dao.MesaDAO;
 import dto.MesaDTO;
+import dto.ReservaDTO;
 import entidades.MesaEntidad;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -72,20 +73,66 @@ public class MesaNegocio {
     /**
      * Modifica una mesa en la base de datos.
      * 
-     * @param c El objeto MesaDTO que representa la mesa a modificar.
+     * @param mesaVieja
+     * @param mesaNueva
+     * 
      */
-    public void modificarMesa(MesaDTO c) {
-        mesaDAO.modificarMesa(convertir(c));
+    public void modificarMesa(MesaDTO mesaVieja, MesaDTO mesaNueva){
+        
+        try {
+            // Se elimina la mesa vieja y se guarda la nueva
+            eliminarMesaParaModificar(mesaVieja);
+            guardarMesa(mesaNueva);
+        } catch (Exception ex) {
+            // Captura y muestra de errores al actualizar la mesa
+            System.out.println("Error al editar la siguiente mesa " + mesaVieja.getCodigoMesa()+ " en negocio." );
+        }
     }
 
+    public void eliminarMesaParaModificar(MesaDTO mesaDTO) throws Exception{
+        
+        // Se convierte el DTO a entidad Mesa
+        
+        ReservaNegocio reservaNegocio = new ReservaNegocio();
+        
+        List<ReservaDTO> reservasConEstaMesa = reservaNegocio.buscarReservasPorMesa(mesaDTO);
+        
+        System.out.println(reservasConEstaMesa.toString());
+        
+        for(ReservaDTO reserva : reservasConEstaMesa)
+            reservaNegocio.eliminarReserva(reserva);
+        
+        MesaEntidad mesa = new MesaEntidad(mesaDTO.getCodigoMesa(), mesaDTO.getTipo(), mesaDTO.getCapacidad(), mesaDTO.getUbicacion());
+        
+        try {
+            // Se llama al DAO para eliminar la mesa de la base de datos
+            mesaDAO.eliminarMesa(mesa);
+        } catch (Exception ex) {
+            // Captura y muestra de errores al eliminar la mesa
+            System.out.println("Error al eliminar la siguiente mesa " + mesa.getCodigoMesa()+ " en negocio." );
+        }
+    }
+    
     /**
      * Elimina una mesa de la base de datos.
      * 
-     * @param c El objeto MesaDTO que representa la mesa a eliminar.
+     * @param mesa El objeto MesaDTO que representa la mesa a eliminar.
      */
-    public void eliminarMesa(MesaDTO c) {
-        mesaDAO.eliminarMesa(convertir(c));
+    public void eliminarMesa(MesaEntidad mesa) {
+        String query = "DELETE FROM tblmesa WHERE codigoMesa = ?";
+        ConexionBD conexionBD = new ConexionBD();
+
+        try (Connection conn = conexionBD.crearConexion();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, mesa.getCodigoMesa());
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
 
     /**
      * Busca una mesa por su ID en la base de datos.
@@ -138,6 +185,37 @@ public class MesaNegocio {
     }
     
     /**
+     * Se buscan las mesas disponibles por ubicacion
+     * @param seccion El objeto mesaDTo con los datos necesarios para la busqueda
+     * @return una lista de mesa dto
+     */
+    public List<MesaDTO> buscarMesasPorUbicacion(MesaDTO seccion) throws Exception{
+    
+        List<MesaDTO> mesasDisponibles = new ArrayList<>();
+        List<MesaEntidad>  mesasEntidad = new ArrayList<>();
+        
+        try {
+            mesasEntidad = mesaDAO.buscarMesasPorUbicacion(seccion.getUbicacion());
+        } catch (Exception ex) {
+            
+        }
+        
+        for(MesaEntidad mesa : mesasEntidad){
+        
+            MesaDTO mesaD = new MesaDTO(mesa.getCodigoMesa(), mesa.getTipo(), mesa.getCapacidad(), mesa.getUbicacion());
+            
+            mesasDisponibles.add(mesaD);
+            
+        }
+        
+        if(mesasDisponibles.isEmpty())
+            return null;
+        
+        return mesasDisponibles;
+        
+    }
+    
+    /**
      * Obtiene las mesas filtradas por ubicación y capacidad desde la base de datos.
      * 
      * @param ubicacion La ubicación de las mesas a buscar.
@@ -146,7 +224,7 @@ public class MesaNegocio {
      */
     private List<MesaDTO> obtenerMesasPorUbicacionYCapacidad(String ubicacion, int numPersonas) {
         // Consulta a la base de datos para obtener las mesas filtradas
-        String query = "SELECT * FROM Mesas WHERE ubicacion = ? AND capacidad >= ?";
+        String query = "SELECT * FROM tblmesa WHERE ubicacion = ? AND capacidad >= ?";
         List<MesaDTO> mesas = new ArrayList<>();
         ConexionBD conexionBD = new ConexionBD();
         try (Connection conn = conexionBD.crearConexion();
@@ -182,7 +260,7 @@ public class MesaNegocio {
      */
     private boolean verificarDisponibilidadMesa(MesaDTO mesa, LocalDateTime fechaHora) {
         // Consulta a la base de datos para verificar si la mesa tiene reservas en conflicto
-        String query = "SELECT COUNT(*) AS total FROM Reservas WHERE idMesa = ? AND fechaHoraReserva = ?";
+        String query = "SELECT COUNT(*) AS total FROM tblreserva WHERE idMesa = ? AND fechaHoraReserva = ?";
         boolean disponible = false;
         ConexionBD conexionBD = new ConexionBD();
         try (Connection conn = conexionBD.crearConexion();

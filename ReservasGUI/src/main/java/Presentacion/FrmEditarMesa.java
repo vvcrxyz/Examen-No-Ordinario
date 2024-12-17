@@ -5,13 +5,19 @@
 package Presentacion;
 
 import dto.MesaDTO;
+import javax.swing.JOptionPane;
+import logica.MesaNegocio;
 
 /**
  *
  * @author limon
  */
 public class FrmEditarMesa extends javax.swing.JFrame {
-
+    
+    MesaDTO mesaSeleccionada = new MesaDTO();
+    FrmGestionarMesa frmGestionarMesa = new FrmGestionarMesa(); // Initialize i
+    MesaNegocio mesaNegocio = new MesaNegocio();
+    
     public FrmEditarMesa(){
         
     }
@@ -19,8 +25,10 @@ public class FrmEditarMesa extends javax.swing.JFrame {
     /**
      * Creates new form FrmEditarMesa
      */
-    public FrmEditarMesa(MesaDTO mesa) {
+    public FrmEditarMesa(FrmGestionarMesa frmGestionarMesa, MesaDTO mesaSeleccionada) {
         initComponents();
+        
+        campoTextoCodigoMesa.setText(mesaSeleccionada.getCodigoMesa());
     }
 
     /**
@@ -32,17 +40,118 @@ public class FrmEditarMesa extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        btnRegresar = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        campoTextoCodigoMesa = new javax.swing.JTextField();
+        comboBoxTipoMesa = new javax.swing.JComboBox<>();
+        comboBoxUbicacion = new javax.swing.JComboBox<>();
+        btnEditar = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FrmMesas.jpg"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        jLabel2.setFont(new java.awt.Font("MingLiU-ExtB", 1, 48)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("Editar mesa");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 150, -1, -1));
+
+        btnRegresar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnRegresar.png"))); // NOI18N
+        btnRegresar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRegresar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnRegresarMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnRegresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 0, -1, -1));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setText("Codigo de mesa");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel4.setText("Ubicacion");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 310, -1, -1));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel5.setText("Tipo de mesa");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 370, -1, -1));
+
+        campoTextoCodigoMesa.setEditable(false);
+        getContentPane().add(campoTextoCodigoMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 230, 150, 50));
+
+        comboBoxTipoMesa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pequeña", "Mediana", "Grande" }));
+        comboBoxTipoMesa.setSelectedIndex(-1);
+        getContentPane().add(comboBoxTipoMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 370, 150, 50));
+
+        comboBoxUbicacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Terraza", "General", "Ventana" }));
+        comboBoxUbicacion.setSelectedIndex(-1);
+        comboBoxUbicacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBoxUbicacionActionPerformed(evt);
+            }
+        });
+        getContentPane().add(comboBoxUbicacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 300, 150, 50));
+
+        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnEditar.png"))); // NOI18N
+        btnEditar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEditar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEditarMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 460, -1, -1));
+
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/frmEditarMesa.jpg"))); // NOI18N
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnRegresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegresarMouseClicked
+        // TODO add your handling code here:
+        FrmGestionarMesa frm = new FrmGestionarMesa();
+        frm.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnRegresarMouseClicked
+
+    private void comboBoxUbicacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxUbicacionActionPerformed
+        
+    }//GEN-LAST:event_comboBoxUbicacionActionPerformed
+
+    private void btnEditarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditarMouseClicked
+      
+        String codigoMesa = campoTextoCodigoMesa.getText(); // Obtener el valor de campoTextoCodigoMesa
+        String ubicacion = comboBoxUbicacion.getSelectedItem().toString();
+        String tipo = comboBoxTipoMesa.getSelectedItem().toString();
+ 
+        
+        MesaDTO mesaNueva = new MesaDTO(tipo, 2, ubicacion);
+        
+        if(tipo.equals("Pequeña"))
+            mesaNueva.setCapacidad(2);
+        
+        if(tipo.equals("Mediana"))
+            mesaNueva.setCapacidad(4);
+        
+        if(tipo.equals("Grande"))
+            mesaNueva.setCapacidad(8);
+       
+        
+        mesaNegocio.modificarMesa(mesaSeleccionada, mesaNueva);
+        
+        JOptionPane.showMessageDialog(this, "La mesa fue editada correctamente");
+        
+        frmGestionarMesa.setVisible(true);
+        this.dispose();      
+    }//GEN-LAST:event_btnEditarMouseClicked
 
     /**
      * @param args the command line arguments
@@ -80,6 +189,15 @@ public class FrmEditarMesa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel btnEditar;
+    private javax.swing.JLabel btnRegresar;
+    private javax.swing.JTextField campoTextoCodigoMesa;
+    private javax.swing.JComboBox<String> comboBoxTipoMesa;
+    private javax.swing.JComboBox<String> comboBoxUbicacion;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     // End of variables declaration//GEN-END:variables
 }

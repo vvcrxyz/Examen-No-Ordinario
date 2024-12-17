@@ -7,7 +7,12 @@ package Presentacion;
 import com.github.lgooddatepicker.components.DateTimePicker;
 import dto.ClienteDTO;
 import dto.ReservaDTO;
+import dto.RestauranteDTO;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -26,7 +31,7 @@ public class FrmReserva extends javax.swing.JFrame {
     DateTimePicker dateTimePicker = new DateTimePicker();
     ReservaNegocio reservaNegocio = new ReservaNegocio();
     MesaNegocio mesaNegocio = new MesaNegocio();
-
+    RestauranteDTO restaurante = new RestauranteDTO();
     
     /**
      * Creates new form FrmReserva
@@ -35,36 +40,79 @@ public class FrmReserva extends javax.swing.JFrame {
         initComponents();
         
         
-        fldFechaHora.add(dateTimePicker);
-        
+        this.fldFecha.addDateChangeListener(d -> {
+            if (d.getNewDate().isBefore(LocalDate.now())) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        //"No se pudo obtener la informacion de las mesas en la base de datos.",
+                        "La fecha no debe ser anterior a la actual.",
+                        "Error - Fecha erronea",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                fldFecha.setDate(LocalDate.now());
+            }
+        });
+
+       this.fldHora.addTimeChangeListener(t -> {
+            LocalTime horaApertura = restaurante.getHoraApertura();
+            LocalTime horaCierre = restaurante.getHoraCierre();
+            LocalTime horaSeleccionada = t.getNewTime();
+
+            if (horaSeleccionada.isBefore(horaApertura)) {
+                fldHora.setTime(horaApertura);
+                JOptionPane.showMessageDialog(
+                        this,
+                        "La hora seleccionada es antes de la hora de apertura del restaurante.",
+                        "Error - Hora no permitida",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+                return;
+            }
+
+            if (horaSeleccionada.isAfter(horaCierre.minusHours(1))) {
+                fldHora.setTime(horaCierre.minusHours(1));
+                JOptionPane.showMessageDialog(
+                        this,
+                        "La hora seleccionada es después de la hora de cierre del restaurante.",
+                        "Error - Hora no permitida",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+                return;
+            }
+
+            fldHora.setTime(horaSeleccionada);
+        });
+
+
         llenarBoxNombreCompleto(clienteNegocio.buscarClientes());
     }
-    
     private void llenarBoxNombreCompleto(List<ClienteDTO> clientes) {
         comboBoxNombreCompleto.removeAllItems();
 
-    // Agregar los nombres completos al ComboBox
-    for (ClienteDTO cliente : clientes) {
-        comboBoxNombreCompleto.addItem(cliente.getNombreCompleto());
-    }
-
-    // Listener para actualizar el teléfono según el cliente seleccionado
-    comboBoxNombreCompleto.addActionListener(evt -> {
-        int selectedIndex = comboBoxNombreCompleto.getSelectedIndex();
-        if (selectedIndex >= 0) {
-            ClienteDTO clienteSeleccionado = clientes.get(selectedIndex);
-            String telefonoEncriptado = clienteSeleccionado.getTelefono();
-
-            try {
-                // Desencriptar el teléfono utilizando la clave proporcionada
-                String telefonoDesencriptado = Encriptado.decrypt(telefonoEncriptado, "1234567890123456"); // Asegúrate de usar la misma clave
-                campoTextoTelefono.setText(telefonoDesencriptado);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error al desencriptar el teléfono: " + e.getMessage());
-                e.printStackTrace();
-            }
+        // Agregar los nombres completos al ComboBox
+        for (ClienteDTO cliente : clientes) {
+            comboBoxNombreCompleto.addItem(cliente.getNombreCompleto());
         }
-    });
+
+        // Listener para actualizar el teléfono según el cliente seleccionado
+        comboBoxNombreCompleto.addActionListener(evt -> {
+            int selectedIndex = comboBoxNombreCompleto.getSelectedIndex();
+            if (selectedIndex >= 0) {
+                ClienteDTO clienteSeleccionado = clientes.get(selectedIndex);
+                String telefonoEncriptado = clienteSeleccionado.getTelefono();
+
+                try {
+                    // Desencriptar el teléfono utilizando la clave proporcionada
+                    String telefonoDesencriptado = Encriptado.decrypt(telefonoEncriptado, "1234567890123456"); // Asegúrate de usar la misma clave
+                    campoTextoTelefono.setText(telefonoDesencriptado);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Error al desencriptar el teléfono: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
     }
     
     private void limpiarFormulario() {
@@ -139,13 +187,15 @@ public class FrmReserva extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         comboBoxUbicacion = new javax.swing.JComboBox<>();
-        fldFechaHora = new javax.swing.JPanel();
         spinPersonas = new com.toedter.components.JSpinField();
         btnGuardar = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         comboBoxNombreCompleto = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
         campoTextoTelefono = new javax.swing.JTextField();
+        fldFecha = new com.github.lgooddatepicker.components.DatePicker();
+        jLabel5 = new javax.swing.JLabel();
+        fldHora = new com.github.lgooddatepicker.components.TimePicker();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -170,26 +220,25 @@ public class FrmReserva extends javax.swing.JFrame {
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel6.setText("Fecha y hora");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, -1, -1));
+        jLabel6.setText("Fecha");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 320, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setText("Ubicacion");
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 410, -1, -1));
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 440, -1, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setText("No. personas");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 470, -1, -1));
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 500, -1, -1));
 
         comboBoxUbicacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Terraza", "General", "Ventana" }));
-        getContentPane().add(comboBoxUbicacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 400, 100, 50));
-        getContentPane().add(fldFechaHora, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 340, 350, 40));
+        getContentPane().add(comboBoxUbicacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 430, 100, 50));
 
         spinPersonas.setMaximum(8);
         spinPersonas.setMinimum(1);
-        getContentPane().add(spinPersonas, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 470, 70, 30));
+        getContentPane().add(spinPersonas, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 500, 70, 30));
 
         btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnGuardar.png"))); // NOI18N
         btnGuardar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -219,6 +268,13 @@ public class FrmReserva extends javax.swing.JFrame {
             }
         });
         getContentPane().add(campoTextoTelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 260, 200, 40));
+        getContentPane().add(fldFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 320, 220, 30));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel5.setText("Hora");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 370, -1, -1));
+        getContentPane().add(fldHora, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 370, 120, 30));
 
         fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/FrmMesas.jpg"))); // NOI18N
         getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -237,7 +293,9 @@ public class FrmReserva extends javax.swing.JFrame {
     private void btnGuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGuardarMouseClicked
         
          try {
-        String nombreCompleto = comboBoxNombreCompleto.getSelectedItem() != null ? comboBoxNombreCompleto.getSelectedItem().toString() : null;
+        String nombreCompleto = comboBoxNombreCompleto.getSelectedItem() != null 
+                                ? comboBoxNombreCompleto.getSelectedItem().toString() 
+                                : null;
         String telefono = campoTextoTelefono.getText();
 
         if (nombreCompleto == null || nombreCompleto.isEmpty()) {
@@ -250,43 +308,60 @@ public class FrmReserva extends javax.swing.JFrame {
             return;
         }
 
-        LocalDateTime fechaHoraReserva = dateTimePicker.getDateTimeStrict();
+        // Obtener la fecha y hora seleccionadas
+        LocalDate fechaSeleccionada = fldFecha.getDate();
+        LocalTime horaSeleccionada = fldHora.getTime();
 
-        // Validar que la fecha/hora esté seleccionada
-        if (fechaHoraReserva == null) {
+        if (fechaSeleccionada == null || horaSeleccionada == null) {
             JOptionPane.showMessageDialog(this, "Por favor, selecciona una fecha y hora válidas.");
             return;
         }
 
+        // Combinar fecha y hora seleccionada
+        LocalDateTime fechaHoraReserva = LocalDateTime.of(fechaSeleccionada, horaSeleccionada);
+
+        // Convertir a zona horaria fija (Hermosillo)
+        ZoneId zonaHermosillo = ZoneId.of("America/Hermosillo");
+        ZonedDateTime fechaHoraHermosillo = fechaHoraReserva.atZone(zonaHermosillo);
+
+        // Validar que no sea anterior a la hora actual
+        if (fechaHoraHermosillo.isBefore(ZonedDateTime.now(zonaHermosillo))) {
+            JOptionPane.showMessageDialog(this, "La fecha y hora de la reserva no puede ser anterior al momento actual en Hermosillo.");
+            return;
+        }
+
+        // Obtener otros datos del formulario
         String ubicacion = comboBoxUbicacion.getSelectedItem().toString();
         int numPersonas = spinPersonas.getValue();
 
-        String codigoMesa = generarCodigoMesa(ubicacion,numPersonas);
+        String codigoMesa = generarCodigoMesa(ubicacion, numPersonas);
 
-        // Calcular costo de la reserva.
+        // Calcular costo de la reserva
         double costoReserva = calcularCostoReserva(numPersonas);
 
-        // Convertir LocalDateTime a Calendar.
-        Calendar fechaHoraCalendar = convertirLocalDateTimeACalendar(fechaHoraReserva);
+        // Convertir LocalDateTime a Calendar (para compatibilidad)
+        Calendar fechaHoraCalendar = convertirLocalDateTimeACalendar(fechaHoraHermosillo.toLocalDateTime());
 
-        // Asignar id en 1 (Si la base de datos maneja el autoincremento, omítelo)
-        long id = 1;  // Inicializando id en 1, o podrías obtenerlo de un servicio si es necesario
+        // Crear reserva
+        long id = 1; // ID temporal, ajusta según tu lógica
+        ReservaDTO reserva = new ReservaDTO(
+            id, nombreCompleto, telefono, fechaHoraCalendar, ubicacion, numPersonas, costoReserva, codigoMesa
+        );
 
-        // Crear la reserva (incluye código de mesa y el id inicializado)
-        ReservaDTO reserva = new ReservaDTO(id, nombreCompleto, telefono, fechaHoraCalendar, ubicacion, numPersonas, costoReserva, codigoMesa);
-
-        // Lógica para guardar en la base de datos.
+        // Guardar en la base de datos
         reservaNegocio.guardarReserva(reserva);
 
-        JOptionPane.showMessageDialog(this, "Reserva guardada exitosamente:\nCódigo de mesa: " + codigoMesa + "\nCosto: $" + costoReserva);
+        JOptionPane.showMessageDialog(this, "Reserva guardada exitosamente:\nCódigo de mesa: " + codigoMesa 
+                                      + "\nCosto: $" + costoReserva
+                                      + "\nZona horaria: Hermosillo");
 
-        // Limpiar campos del formulario
+        // Limpiar formulario
         limpiarFormulario();
+
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Error al guardar la reserva: " + e.getMessage());
         e.printStackTrace();
     }
-        
     }//GEN-LAST:event_btnGuardarMouseClicked
 
     private void campoTextoTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTextoTelefonoActionPerformed
@@ -335,12 +410,14 @@ public class FrmReserva extends javax.swing.JFrame {
     private javax.swing.JTextField campoTextoTelefono;
     private javax.swing.JComboBox<String> comboBoxNombreCompleto;
     private javax.swing.JComboBox<String> comboBoxUbicacion;
-    private javax.swing.JPanel fldFechaHora;
+    private com.github.lgooddatepicker.components.DatePicker fldFecha;
+    private com.github.lgooddatepicker.components.TimePicker fldHora;
     private javax.swing.JLabel fondo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
